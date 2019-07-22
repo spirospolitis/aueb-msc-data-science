@@ -1,4 +1,4 @@
-# AUEB M.Sc. in Data Science
+# AUEB M.Sc. in Data Science (part-time)
 My repo of assignments for the AUEB M.Sc. in Data Science (2018-2020)
 
 ----------
