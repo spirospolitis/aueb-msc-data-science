@@ -1,0 +1,1046 @@
+---
+title: "M.Sc. in Data Science - Probability and Statistics for Data Analysis - Homework
+  3"
+semester: "Fall 2018"
+instructor: "Ioannis Vrontos (vrontos@aueb.gr)"
+grader: "Konstantinos Bourazas (kbourazas@aueb.gr)"
+author: "Spiros Politis"
+date: "Jan. 2019"
+output:
+  html_document: default
+  pdf_document: default
+indent: true
+---
+
+```{r initial_setup, include = FALSE, echo = TRUE, output = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install_required_libraries, echo = TRUE, output = FALSE, results='hide'}
+# Install required packages if not already installed
+chooseCRANmirror(graphics = TRUE, ind = c(1, 2, 3, 4, 5))
+knitr::opts_chunk$set(echo = TRUE)
+
+list.of.packages = c("readxl", "kableExtra", "dplyr", "ggplot2", "tibble", "lattice", "nortest", "car", "gplots", "agricolae", "MASS", "leaps")
+
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+
+if(length(new.packages)) {
+  install.packages(new.packages, dependencies = TRUE)
+}
+```
+
+```{r load_required_libraries, echo = TRUE, output = FALSE}
+# Load required libraries
+library("readxl")
+library("kableExtra")
+library("dplyr")
+library("ggplot2")
+library("lattice")
+library("ggplot2")
+library("nortest")
+library("car")
+library("gplots")
+library("agricolae")
+library("MASS")
+library("leaps")
+```
+
+<p style="line-height: 1.8em;">
+**Note**: Use R in this homework and submit your .R code that was used to answer the questions, along with a small report where you will present plots and results for each question of this homework.
+</p>
+
+<p style="line-height: 1.8em;">
+**1**. In the spreadsheet named "Data 1" of the file "Homework 3 Data.xlsx" (available on e-class homework site) you will find the recorded variables Y, X1, X2, X3 (continuous) and W (categorical with three levels) on 150 cases. Using these data answer the following questions:
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let us view a sample of our data set:
+</p>
+
+```{r ex_1_import_source_data, echo = TRUE, output = FALSE}
+# Read Excel sheet 1
+ex_1.data = read_excel("Homework_3_Data.xlsx", sheet = 1)
+
+# Convert variable W to factor
+ex_1.data[["W"]] = factor(ex_1.data[["W"]])
+```
+
+```{r ex_1_render_source_data_sample, echo = TRUE, output = TRUE}
+# Render the table
+head(ex_1.data, n = 5L) %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F) %>% add_header_above(c("Exercise 1 source data set (showing 5 rows)" = 5))
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+First thing to note is that we are required to conduct a one-way ANOVA test, whose standard hypothesis testing framework is as follows:
+</p>
+
+<br/>
+
+$$H_0: \mu_{Y} = \mu_{X1} = \mu_{X2} = \mu_{X3}$$
+$$H_A: \text{not }H_0$$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(a)** Run the parametric one-way ANOVA of each of the continuous variables (Y, X1, X2, X3) on the categorical variable (W). Specifically,
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+We execute the ANOVA function for each independent variable (Y, X1, X2, X3) in our data set:
+</p>
+
+```{r}
+summary(aov(formula = Y + X1 + X2 + X3 ~ W, data = ex_1.data))
+```
+
+
+```{r ex_1_aov_Y, echo = TRUE, output = FALSE}
+ex_1_aov_Y = aov(formula = Y ~ W, data = ex_1.data)
+```
+
+```{r ex_1_aov_X1, echo = TRUE, output = FALSE}
+ex_1_aov_X1 = aov(formula = X1 ~ W, data = ex_1.data)
+```
+
+```{r ex_1_aov_X2, echo = TRUE, output = FALSE}
+ex_1_aov_X2 = aov(formula = X2 ~ W, data = ex_1.data)
+```
+
+```{r ex_1_aov_X3, echo = TRUE, output = FALSE}
+ex_1_aov_X3 = aov(formula = X3 ~ W, data = ex_1.data)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- **(i)** provide a graphical representation of each of the continuous versus the categorical variable
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_1_means_plot_Y, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.a.i: continuous variables means vs factor", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(x = ex_1.data[["W"]], y = ex_1.data[["Y"]], main = "Y")
+plot(x = ex_1.data[["W"]], y = ex_1.data[["X1"]], main = "X1")
+plot(x = ex_1.data[["W"]], y = ex_1.data[["X2"]], main = "X2")
+plot(x = ex_1.data[["W"]], y = ex_1.data[["X3"]], main = "X3")
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- **(ii)** provide the ANOVA output
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- For **Y ~ W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_output_Y, echo = TRUE}
+summary(ex_1_aov_Y)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- For **X1 ~ W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_output_X1, echo = TRUE}
+summary(ex_1_aov_X1)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- For **X2 ~ W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_output_X2, echo = TRUE}
+summary(ex_1_aov_X2)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- For **X3 ~ W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_output_X3, echo = TRUE}
+summary(ex_1_aov_X3)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- **(iii)** check the assumptions and provide alternatives when the assumptions are violated.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's enumerate the assumptions for ANOVA first:
+
+i) Residuals are normally distributed
+ii) Residuals are homogenous (homoscedastic)
+</p>
+
+<p style="line-height: 1.8em;">
+We will employ both graphical diagnostic plots as well as parametric tests.
+</p>
+
+<p style="line-height: 1.8em;">
+On the subject of diagnostic plots, what we are looking for is the following:
+</p>
+
+<p style="line-height: 1.8em;">
+- For the assumption of normality, we check the "Normal Q-Q" plot, which should present us with a fairly straight line of residuals, fitted as close as possible along the theoretical quantiles axis, thus providing us with an indication that the residuals follow closely the normal distribution.
+</p>
+
+<p style="line-height: 1.8em;">
+- For the assumption of homoscedasticity, we are mostly interested in checking the "Scale-Location" plot, which should present us with a mostly horizontal and smooth red line and residual points that are randomly and evenly distributed around it i.e. in a "noisy" fashion. No discernable patterns should be identified (e.g. the points showing a "funnel" dispertion etc.).
+</p>
+
+<p style="line-height: 1.8em;">
+On the subject of parametric tests, we will employ the following:
+</p>
+
+<p style="line-height: 1.8em;">
+For normality:
+</p>
+
+<p style="line-height: 1.8em;">
+i) Shapiro-Wilk test
+ii) Lilliefors (Kolmogorov-Smirnov) test
+</p>
+
+<p style="line-height: 1.8em;">
+For homoscedasticity:
+</p>
+
+<p style="line-height: 1.8em;">
+i) Levene test, which is slightly more robust to departures from normality than Bartlett test
+ii) Fligner-Killeen test, which is a non-parametric test and we will use it as a check on Levene test
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's inspect the diagnostic plots and run the parametric tests for **Y~W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_Y_diag, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.a.iii.1: ANOVA diagnostic plots for Y~W", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(ex_1_aov_Y)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Visual inspection shows that the residuals are nearly normally distributed and that they are homoscedastic.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Normality tests:
+</p>
+
+```{r ex_1_aov_Y_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_1_aov_Y_shapiro_wilk = shapiro.test(x = ex_1_aov_Y[["residuals"]])
+ex_1_aov_Y_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_1_aov_Y_shapiro_wilk["p.value"]`$, which is larger than the significance level $\alpha = 0.05$. Therefore we **cannot reject $H_0$** and **assume normality of the residuals**.
+</p>
+
+```{r ex_1_aov_Y_lilliefors, echo = TRUE, output = TRUE}
+ex_1_aov_Y_lilliefors = lillie.test(ex_1_aov_Y[["residuals"]])
+ex_1_aov_Y_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+Lilliefors test produces a p-value of $`r ex_1_aov_Y_lilliefors["p.value"]`$, which is barely smaller than the significance level $\alpha = 0.05$. Reinforced by the Shapiro-Wilk test, we conclude that we **cannot reject $H_0$** and **assume normality of the residuals**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Homoscedasticity tests:
+</p>
+
+```{r ex_1_aov_Y_levene, echo = TRUE, output = TRUE}
+ex_1_aov_Y_levene = leveneTest(ex_1.data[["Y"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_Y_levene
+```
+
+<p style="line-height: 1.8em;">
+Levene test produces a p-value of $0.002259$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+```{r ex_1_aov_Y_fligner, echo = TRUE, output = TRUE}
+# Test the assumption of homogeneity of variances
+ex_1_aov_Y_fligner = fligner.test(ex_1.data[["Y"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_Y_fligner
+```
+
+<p style="line-height: 1.8em;">
+Flinger test produces a p-value of $0.003$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark style="line-height: 1.8em; background-color: #FFFF00">Conclusion for **Y~W**</mark>: ANOVA assumptions are <mark style="line-height: 1.8em; background-color: red; color: white">**not satisfied**.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's inspect the diagnostic plots and run the parametric tests for **X1~W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X1_diag, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.a.iii.2: ANOVA diagnostic plots for X1~W", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(ex_1_aov_X1)
+```
+<br/>
+
+<p style="line-height: 1.8em;">
+Visual inspection shows that the residuals are nearly normally distributed and that they are homoscedastic.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Normality tests:
+</p>
+
+```{r ex_1_aov_X1_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_1_aov_X1_shapiro_wilk = shapiro.test(x = ex_1_aov_X1[["residuals"]])
+ex_1_aov_X1_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_1_aov_X1_shapiro_wilk["p.value"]`$, which is larger than the significance level $\alpha = 0.05$. Therefore we **cannot reject $H_0$** and **assume normality of the residuals**.
+</p>
+
+```{r ex_1_aov_X1_lilliefors, echo = TRUE, output = TRUE}
+ex_1_aov_X1_lilliefors = lillie.test(ex_1_aov_X1[["residuals"]])
+ex_1_aov_X1_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+Lilliefors test produces a p-value of $`r ex_1_aov_X1_lilliefors["p.value"]`$, which is significantly larger than the significance level $\alpha = 0.05$. We conclude that we **cannot reject $H_0$** and **assume normality of the residuals**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Homoscedasticity tests:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X1_levene, echo = TRUE, output = TRUE}
+ex_1_aov_X1_levene = leveneTest(ex_1.data[["X1"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X1_levene
+```
+
+<p style="line-height: 1.8em;">
+Levene test produces a p-value of $0.5555$, which is significantly larger than the significance level $\alpha = 0.05$. Therefore we **fail to reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **homoscedastic**.
+</p>
+
+```{r ex_1_aov_X1_fligner, echo = TRUE, output = TRUE}
+# Test the assumption of homogeneity of variances
+ex_1_aov_X1_fligner = fligner.test(ex_1.data[["X1"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X1_fligner
+```
+
+<p style="line-height: 1.8em;">
+Flinger test produces a p-value of $0.6338$, which is significantly larger than the significance level $\alpha = 0.05$. Therefore we **fail reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **homoscedastic**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark style="line-height: 1.8em; background-color: #FFFF00">Conclusion for **X1~W**</mark>: ANOVA assumptions are <mark style="line-height: 1.8em; background-color: green; color: white">**satisfied**.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's inspect the diagnostic plots and run the parametric tests for **X2~W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X2_diag, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.a.iii.3: ANOVA diagnostic plots for X2~W", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(ex_1_aov_X2)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Visual inspection shows that the residuals seem to have problems at the tails of the distribution, therefore visual testing alone is not enough for us to reach a conclusion about normality. The residuals also seem to display a "diamond"" pattern, we should run tests to provide a verdict on homoscedasticity.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Normality tests:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X2_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_1_aov_X2_shapiro_wilk = shapiro.test(x = ex_1_aov_X2[["residuals"]])
+ex_1_aov_X2_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_1_aov_X2_shapiro_wilk["p.value"]`$, which is smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and say that our residuals **are not normally distributed**.
+</p>
+
+```{r ex_1_aov_X2_lilliefors, echo = TRUE, output = TRUE}
+ex_1_aov_X2_lilliefors = lillie.test(ex_1_aov_X2[["residuals"]])
+ex_1_aov_X2_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+Lilliefors test produces a p-value of $`r ex_1_aov_X2_lilliefors["p.value"]`$, which is significantly smaller than the significance level $\alpha = 0.05$. We conclude that we **reject $H_0$** in favor of $H_A$ and say that our residuals **are not normally distributed**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Homoscedasticity tests:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X2_levene, echo = TRUE, output = TRUE}
+ex_1_aov_X2_levene = leveneTest(ex_1.data[["X2"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X2_levene
+```
+
+<p style="line-height: 1.8em;">
+Levene test produces a p-value of $3.129e-08$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+```{r ex_1_aov_X2_fligner, echo = TRUE, output = TRUE}
+# Test the assumption of homogeneity of variances
+ex_1_aov_X2_fligner = fligner.test(ex_1.data[["X2"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X2_fligner
+```
+
+<p style="line-height: 1.8em;">
+Flinger test produces a p-value of $2.906e-08$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark style="line-height: 1.8em; background-color: #FFFF00">Conclusion for **X2~W**</mark>: ANOVA assumptions are <mark style="line-height: 1.8em; background-color: red; color: white">**not satisfied**.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's inspect the diagnostic plots and run the parametric tests for **X3~W**:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X3_diag, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.a.iii.4: ANOVA diagnostic plots for X3~W", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(ex_1_aov_X3)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Visual inspection shows that the residuals seem to have problems regarding normality, therefore visual testing alone is not enough for us to reach a conclusion. The residuals also seem to display a "funnel"" pattern, we should run tests to provide a verdict on homoscedasticity
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Normality tests:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X3_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_1_aov_X3_shapiro_wilk = shapiro.test(x = ex_1_aov_X3[["residuals"]])
+ex_1_aov_X3_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_1_aov_X3_shapiro_wilk["p.value"]`$, which is smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and say that there is significant evidence that our residuals are **not normal**.
+</p>
+
+```{r ex_1_aov_X3_lilliefors, echo = TRUE, output = TRUE}
+ex_1_aov_X3_lilliefors = lillie.test(ex_1_aov_X3[["residuals"]])
+ex_1_aov_X3_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+Lilliefors test produces a p-value of $`r ex_1_aov_X3_lilliefors["p.value"]`$, which is significantly smaller than the significance level $\alpha = 0.05$. We conclude that we **reject $H_0$** in favor of $H_A$ and say that our residuals **are not normally distributed**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Homoscedasticity tests:
+</p>
+
+<br/>
+
+```{r ex_1_aov_X3_levene, echo = TRUE, output = TRUE}
+ex_1_aov_X3_levene = leveneTest(ex_1.data[["X3"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X3_levene
+```
+
+<p style="line-height: 1.8em;">
+Levene test produces a p-value of $2.261e-08$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+```{r ex_1_aov_X3_fligner, echo = TRUE, output = TRUE}
+# Test the assumption of homogeneity of variances
+ex_1_aov_X3_fligner = fligner.test(ex_1.data[["X3"]] ~ ex_1.data[["W"]], data = ex_1.data)
+ex_1_aov_X3_fligner
+```
+
+<p style="line-height: 1.8em;">
+Flinger test produces a p-value of $4.157e-07$, which is significantly smaller than the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and are led to believe that our residuals are **not homoscedastic**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark style="line-height: 1.8em; background-color: #FFFF00">Conclusion for **X3~W**</mark>: ANOVA assumptions are <mark style="line-height: 1.8em; background-color: red; color: white">**not satisfied**.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Since the parametric tests have failed to reassure us about the assumptions, we will proceed  with the non-parametric Kruskal-Wallis test. When the Kruskal-Wallis test is significant, it indicates that at least one of the n samples stochastically dominates the rest.
+</p>
+
+<br/>
+
+```{r ex_1_kruskal_Y, echo = TRUE, output = TRUE}
+kruskal.test(Y ~ W, data = ex_1.data)
+```
+```{r ex_1_kruskal_X1, echo = TRUE, output = TRUE}
+kruskal.test(X1 ~ W, data = ex_1.data)
+```
+```{r ex_1_kruskal_X2, echo = TRUE, output = TRUE}
+kruskal.test(X2 ~ W, data = ex_1.data)
+```
+```{r ex_1_kruskal_X3, echo = TRUE, output = TRUE}
+kruskal.test(X3 ~ W, data = ex_1.data)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+From the output of the Kruskal-Wallis test, we know that there is a significant difference between groups, since all p-values are less than $\alpha = 0.05$.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(b)** Provide a scatter-plot matrix of Y, X1, X2, X3, annotating the different levels of W in each plot using a different color.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_1_aov_scatter_plot_all, fig.width = 7, fig.height = 7, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.b: Scatter-plot matrix of Y, X1, X2, X3", echo = TRUE}
+colors = c("red", "green", "blue")
+pairs(ex_1.data, pch = 19, cex = 0.5, col = colors[ex_1.data[["W"]]], upper.panel = NULL, main = "Scatter-plot matrix of Y, X1, X2, X3")
+legend(0.85, 0.85, as.vector(unique(ex_1.data[["W"]])), fill = colors)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(c)** Run the regression model of Y on all the remaining variables (X1, X2, X3, W), including the non-additive terms (i.e. interactions of the continuous predictors with the categorical).
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_1c_lm, echo = TRUE}
+ex_1c_lm = lm(Y ~ X1 + X2 + X3 + W + X1:W + X2:W + X3:W, data = ex_1.data)
+summary(ex_1c_lm)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(d)** Examine the regression assumptions and provide alternatives if any of them fails.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+We will examine the regression assumptions by checking the model diagnostic plots:
+</p>
+
+```{r ex_1d_lm_plot, fig.width = 7, fig.height = 7, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.d: Linear model diagnostics", echo = TRUE}
+layout(mat = matrix(1:4, 2, 2))
+plot(ex_1c_lm)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+- Linearity of the relationship between explanatory and response variables: looking at the "Residuals vs Fitted" plot, we see no discernible patterns in the dispersion of points. We can therefore conclude that the relationship between explanatory and response variables is linear.
+
+- Normality of the residuals: plot "Normal Q-Q" tells the story of normality of the residuals. We can see that the residuals are very well fitted on the theoretical quantiles line, without any significant skewness or abnormal tails. We conclude that the residuals are nearly normally distributed.
+
+    For checking the assumption of normality, apart from the visual method, we will perform some normality tests:
+
+```{r ex_1d_lm_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_1d_lm_shapiro_wilk = shapiro.test(x = ex_1c_lm[["residuals"]])
+ex_1d_lm_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_1d_lm_shapiro_wilk["p.value"]`$, which is significantly larger than the significance level $\alpha = 0.05$. Therefore we **fail to reject $H_0$** in favor of $H_A$ and conclude that there is significant evidence that our residuals are **normal**.
+</p>
+
+```{r ex_1d_lm_lilliefors, echo = TRUE, output = TRUE}
+ex_1d_lm_lilliefors = lillie.test(ex_1c_lm[["residuals"]])
+ex_1d_lm_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+  Lilliefors test produces a p-value of $`r ex_1d_lm_lilliefors["p.value"]`$, which is significantly larger than the significance level $\alpha = 0.05$. We conclude that we **fail to reject $H_0$** in favor of $H_A$ and conclude that our residuals **are normally distributed**.
+</p>
+
+- Homoscedasticity of the residuals: plot "Scale-Location" shows an almost even and random dispersion of residuals, without any patterns appearing in the plot. We conclude that the residuals are homoscedastic.
+
+- Lack of outliers that could significantly affect the regression line slope: plot "Residuals vs Leverage" does not even inlude Cook's distances lines, therefore indicating that there are no outliers that could affect the OLS evaluation of the linear model.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+We conclude that the assumptions of the regression are <mark style="line-height: 1.8em; background-color: green; color: white">**satisfied**</mark>.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(e)** Use the "stepwise regression" and the "all subset" approach to examine whether you can reduce the dimension of the model.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+i. Stepwise regression
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Stepwise regression is a method of iteratively adding and removing model predictors so as to find the subset of explanatory variables in the data set resulting in the best performing model (i.e. the model with the lowest prediction error).
+</p>
+
+<p style="line-height: 1.8em;">
+We will use the **Akaike Information Criterion (AIC)** for selecting our final model. Smaller values of AIC are the ones we are looking for.
+</p>
+
+<p style="line-height: 1.8em;">
+We will use the package "MASS" for this, specifically we will start with the maximal model (all axplanatory variables and their interactions) and we will perform seps to select the optimal combination of variables that minimize the AIC.
+</p>
+
+
+```{r}
+# Fit the full model (explanatory variables and interactions)
+ex_1e_lm_full = lm(formula = Y ~ X1 + X2 + X3 + W + X1:W + X2:W + X3:W, data = ex_1.data)
+
+# Stepwise regression model
+ex_1e_lm_optimal = stepAIC(ex_1e_lm_full, direction = "both", trace = TRUE)
+```
+
+<p style="line-height: 1.8em;">
+In the above output, the first two rows show the AIC and model formula for the initial model, containing all explanatory variables.
+</p>
+
+<p style="line-height: 1.8em;">
+The next section of the output shows what happens to the AIC value of the reduced models obtained by eliminating, in turns, each of the predictors from the initial model. If the elimination of a predictor improves the initial model, the AIC becomes smaller. We can see that the model with the lowest AIC is:
+</p>
+
+```{r}
+ex_1e_lm_optimal
+
+summary(ex_1e_lm_optimal)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Therefore, our optimal linear model is $Y = 2.3037 + 0.6674*X1 + 0.2834*X2 - 0.1873*WB - 1.6790*WC - 0.4198*X1:WB – 0.4075*X1:WC + 0.4522*X2:WB + 0.6514*X2:WC$
+</p>
+
+
+<br/>
+
+<p style="line-height: 1.8em;">
+ii. All subset regression
+</p>
+
+<br/>
+
+```{r}
+leaps = regsubsets(Y ~ X1 + X2 + X3 + W + X1:W + X2:W + X3:W, data = ex_1.data, nbest = 1)
+
+summary(leaps)
+```
+
+```{r ex_1e_all_subset_r2_plot, fig.width = 7, fig.height = 7, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.e.i: R2 for all subset regression", echo = TRUE}
+plot(leaps, scale = "r2")
+```
+
+```{r ex_1e_all_subset_r2_adj_plot, fig.width = 7, fig.height = 7, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 1.e.ii: Adjusted R2 for all subset regression", echo = TRUE}
+plot(leaps, scale = "adjr2")
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(f)** Using the model found in **(e)**, provide a point estimate and a 95% confidence interval for the prediction of Y when: (X1, X2, X3, W) = (3.1, 3.75, 1.2, A)
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_1f_lm_optimal, echo = TRUE, output = TRUE}
+# Fit the optimal model
+ex_1f_lm_optimal = lm(formula = Y ~ X1 + X2 + W + X1:W + X2:W, data = ex_1.data)
+```
+
+```{r ex_1f_lm_optimal_predict, echo = TRUE, output = TRUE}
+# Create the data.frame of values of the independent variables
+X = data.frame(X1 = 3.1, X2 = 3.75, X3 = 1.2, W = "A")
+
+# Predict using the optimal linear model, 
+# including confidence interval computations
+ex_1f_lm_optimal_predict = predict(ex_1f_lm_optimal, X, interval = "confidence")
+ex_1f_lm_optimal_predict
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Our point estimate is $`r ex_1f_lm_optimal_predict[1, 1]`$ with a confidence interval $[`r ex_1f_lm_optimal_predict[1, 2]`, `r ex_1f_lm_optimal_predict[1, 3]`]$.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**2.** In the spreadsheet named "Data 2" of the file "Homework 3 data.xlsx" (available on e-class homework site) you will find the recorded variables Y (continuous) and W, Z (categorical with two levels each) on 84 cases. Using these data answer the following questions:
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let us view a sample of our data set:
+</p>
+
+```{r ex_2_import_source_data, echo = TRUE, output = TRUE}
+# Read Excel sheet 2
+ex_2.data = read_excel("Homework_3_Data.xlsx", sheet = 2)
+
+# Convert variables W, Z to factors
+ex_2.data[["W"]] = factor(ex_2.data[["W"]])
+ex_2.data[["Z"]] = factor(ex_2.data[["Z"]])
+```
+
+```{r ex_2_render_source_data_sample, echo = TRUE, output = TRUE}
+# Render the table
+head(ex_2.data, n = 5L) %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F) %>% add_header_above(c("Exercise 2 source data set (showing 5 rows)" = 3))
+```
+
+<p style="line-height: 1.8em;">
+**(a)** Provide a plot of Y versus the W and Z.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_2a_scatter_plot_all, fig.width = 6, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 2.a: Plot of Y vs W and Z", echo = TRUE}
+ex_2a_scatter_plot_all = ggplot(ex_2.data) +
+  aes(x = W, y = Y) +
+  geom_boxplot() +
+  facet_wrap(~Z)
+ex_2a_scatter_plot_all
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+we observe that there seem to be differences in the means of Y depending on the levels of W and Z.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(b)** Provide the interaction plot of Y versus W and Z.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+```{r ex_2b_group_by_interactions, echo = TRUE, output = TRUE}
+ex_2.data.gb.WZ = ex_2.data %>% 
+  group_by(W, Z) %>% 
+  summarise(WZ_group_means = mean(Y))
+```
+
+```{r ex_2b_interaction_plot, fig.width = 6, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 2.b: Interaction plot of Y versus W and Z", echo = TRUE}
+ex_2b_interaction_plot = ex_2.data.gb.WZ %>%
+  ggplot() +
+  aes(x = W, y = WZ_group_means, color = Z) +
+  geom_line(aes(group = Z)) +
+  geom_point()
+
+ex_2b_interaction_plot
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+We can tell that the effect of W is modified by Z. In other words, the effects of W and Z are dependent.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+**(c)** Run the parametric two-way ANOVA of Y on the categorical variables W and Z (including the interaction term). Provide the fit, examine the assumptions and comment on the significance of the terms.
+</p>
+
+<br/>
+
+##### <mark style="line-height: 1.8em; background-color: #FFFF00">Answer</mark>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's identify the assumptions for ANOVA first:
+
+i) Residuals are normally distributed
+ii) Residuals are homogenous (homoscedastic)
+</p>
+
+<p style="line-height: 1.8em;">
+We will employ both graphical diagnostic plots as well as parametric tests.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+On the subject of parametric tests, we will employ the following:
+</p>
+
+<p style="line-height: 1.8em;">
+For normality:
+</p>
+
+<p style="line-height: 1.8em;">
+i) Shapiro-Wilk test
+ii) Lilliefors (Kolmogorov-Smirnov) test
+</p>
+
+<p style="line-height: 1.8em;">
+For homoscedasticity:
+</p>
+
+<p style="line-height: 1.8em;">
+i) Levene test, which is slightly more robust to departures from normality than Bartlett test
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Fitting the two-way ANOVA:
+</p>
+
+```{r ex_2c_aov, echo = TRUE, output = TRUE}
+ex_2c_aov = aov(Y ~ W * Z, data = ex_2.data)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's look at the ANOVA summary:
+</p>
+
+```{r ex_2c_aov_summary, echo = TRUE, output = TRUE}
+summary(ex_2c_aov)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Let's take a look at the ANOVA diagnostic plots:
+</p>
+
+```{r ex_2c_anova_diagnostic_plots, fig.width = 8, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Fig. 2.c: ANOVA diagnostic plots", echo = TRUE}
+layout(matrix(1:4, 2, 2))
+plot(ex_2c_aov)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Identifying whether the assumptions of ANOVA are met with the use of diagnostic plots incurs the following:
+</p>
+
+<p style="line-height: 1.8em;">
+- For the assumption of normality of residuals, we check the "Normal Q-Q" plot, which should present us with a fairly straight line of residuals, fitted as close as possible along the theoretical quantiles axis, thus providing us with an indication that the residuals follow closely the normal distribution. In this instance, however, we observe that the Q-Q plot is severely compromised, exhibiting wild variations along the theoretical quantiles line, with extremely heavy tails.
+
+    We therefore conclude that the residuals **are not normally distributed**.
+</p>
+
+<p style="line-height: 1.8em;">
+- For the assumption of homoscedasticity of residuals, we are mostly interested in checking the "Scale-Location" plot, which should present us with a mostly horizontal and smooth red line and residual points that are randomly and evenly distributed around it i.e. in a "noisy" fashion. No discernable patterns should be identified (e.g. the points showing a "funnel" dispertion etc.). In this instance, however, there appears to be a clearly visible "funnel" pattern in the dispersion of the data. 
+
+    We therefore conclude that the residuals **are not homoscedastic**. 
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Now let's proceed with some formal tests:
+</p>
+
+<br/>
+
+```{r ex_2c_aov_shapiro_wilk, echo = TRUE, output = TRUE}
+ex_2c_aov_shapiro_wilk = shapiro.test(x = ex_2c_aov[["residuals"]])
+ex_2c_aov_shapiro_wilk
+```
+
+<p style="line-height: 1.8em;">
+Shapiro-Wilk test produces a p-value of $`r ex_2c_aov_shapiro_wilk["p.value"]`$, which is significantly smaller the significance level $\alpha = 0.05$. Therefore we **reject $H_0$** in favor of $H_A$ and state that we have significant evidence from the data that **the residuals are not normally distributed**.
+</p>
+
+```{r ex_2c_aov_lilliefors, echo = TRUE, output = TRUE}
+ex_2c_aov_lilliefors = lillie.test(ex_2c_aov[["residuals"]])
+ex_2c_aov_lilliefors
+```
+
+<p style="line-height: 1.8em;">
+Lilliefors test produces a p-value of $`r ex_2c_aov_lilliefors["p.value"]`$, which is significantly smaller than the significance level $\alpha = 0.05$. We arrive at the same conclusion as with the Shapiro-Wilk test and we conclude that we **reject $H_0$** in favor of $H_A$ and claim that our data provide significant evidence that **the residuals are not normally distributed**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Homoscedasticity test (Levene test):
+</p>
+
+```{r ex_2c_aov_levene, echo = TRUE, output = TRUE}
+ex_2c_aov_levene = leveneTest(Y ~ W * Z, data = ex_2.data)
+ex_2c_aov_levene
+```
+
+<p style="line-height: 1.8em;">
+Levene test produces a p-value of $0.2209$, which is significantly larger than the significance level $\alpha = 0.05$. Therefore we **fail to reject $H_0$** and are led to believe that our residuals are **homoscedastic**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark style="line-height: 1.8em; background-color: #FFFF00">Conclusion of the ANOVA analysis</mark>: the assumptions are <mark style="line-height: 1.8em; background-color: red; color: white">**not satisfied**</mark>, mainly because we cannot assume normality of the residuals.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Also, from the ANOVA table we conclude the following, based on the presented p-values at the significance level $\alpha = 0.05$:
+
+<br/>
+
+- the p-value of W is $2.38e-10$ (significant), which indicates that the levels of W are associated with significant differences in Y.
+
+- the p-value of Z is $0.000182$ (significant), which indicates that the levels of Z are associated with significant differences in Y.
+
+- the p-value for the interaction between W and Z (W:Z) is $0.064213$ (not significant) which leads us to believe that the interaction between W and Z is not statistically significant.
+</p>

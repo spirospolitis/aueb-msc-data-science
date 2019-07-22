@@ -1,0 +1,43 @@
+sp@RiriPC:~$ cd Documents/msc-in-data-science/courses/core/large-scale-data-management/homework/001/local-hadoop-cluster/
+sp@RiriPC:~/Documents/msc-in-data-science/courses/core/large-scale-data-management/homework/001/local-hadoop-cluster$ docker-compose up
+Starting datanode1 ... 
+Starting datanode3 ... 
+Starting datanode1
+Starting datanode2 ... 
+Starting datanode3
+Starting namenode ... 
+Starting yarnmaster ... 
+Starting datanode2
+Starting namenode
+Starting datanode3 ... done
+Attaching to datanode2, namenode, datanode1, yarnmaster, datanode3
+datanode2     | 2019-04-07 12:54:04,383 CRIT Supervisor running as root (no user in config file)
+datanode2     | 2019-04-07 12:54:04,384 INFO supervisord started with pid 1
+datanode2     | 2019-04-07 12:54:05,388 INFO spawned: 'nodemanager' with pid 9
+datanode2     | 2019-04-07 12:54:05,391 INFO spawned: 'datanode' with pid 10
+datanode2     | 2019-04-07 12:54:06,443 INFO success: nodemanager entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+datanode2     | 2019-04-07 12:54:06,443 INFO success: datanode entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+namenode      | 2019-04-07 12:54:05,190 CRIT Supervisor running as root (no user in config file)
+namenode      | 2019-04-07 12:54:05,192 INFO supervisord started with pid 1
+namenode      | 2019-04-07 12:54:06,193 INFO spawned: 'namenode' with pid 11
+namenode      | 2019-04-07 12:54:06,194 INFO spawned: 'secondarynamenode' with pid 12
+yarnmaster    | 2019-04-07 12:54:06,298 CRIT Supervisor running as root (no user in config file)
+yarnmaster    | 2019-04-07 12:54:06,299 INFO supervisord started with pid 1
+yarnmaster    | 2019-04-07 12:54:07,301 INFO spawned: 'historyserver' with pid 9
+yarnmaster    | 2019-04-07 12:54:07,302 INFO spawned: 'resourcemanager' with pid 10
+datanode1     | 2019-04-07 12:54:06,041 CRIT Supervisor running as root (no user in config file)
+datanode1     | 2019-04-07 12:54:06,043 INFO supervisord started with pid 1
+datanode1     | 2019-04-07 12:54:07,044 INFO spawned: 'nodemanager' with pid 8
+datanode1     | 2019-04-07 12:54:07,045 INFO spawned: 'datanode' with pid 9
+datanode3     | 2019-04-07 12:54:07,432 CRIT Supervisor running as root (no user in config file)
+datanode3     | 2019-04-07 12:54:07,434 INFO supervisord started with pid 1
+namenode      | 2019-04-07 12:54:07,849 INFO success: namenode entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+namenode      | 2019-04-07 12:54:07,849 INFO success: secondarynamenode entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+datanode1     | 2019-04-07 12:54:08,048 INFO success: nodemanager entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+datanode1     | 2019-04-07 12:54:08,048 INFO success: datanode entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+yarnmaster    | 2019-04-07 12:54:08,304 INFO success: historyserver entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+yarnmaster    | 2019-04-07 12:54:08,304 INFO success: resourcemanager entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+datanode3     | 2019-04-07 12:54:08,435 INFO spawned: 'nodemanager' with pid 13
+datanode3     | 2019-04-07 12:54:08,436 INFO spawned: 'datanode' with pid 14
+datanode3     | 2019-04-07 12:54:09,440 INFO success: nodemanager entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+datanode3     | 2019-04-07 12:54:09,440 INFO success: datanode entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

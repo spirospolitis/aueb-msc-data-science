@@ -1,0 +1,1695 @@
+---
+title: "M.Sc. in Data Science - Probability and Statistics for Data Analysis - Homework
+  2"
+author: "Spiros Politis"
+date: "Dec. 2018"
+output:
+  html_document: default
+  pdf_document: default
+indent: true
+---
+
+```{r setup, include = FALSE, echo = FALSE, output = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r install_required_libraries, echo = FALSE, output = FALSE}
+# Install required packages if not already installed
+chooseCRANmirror(graphics = TRUE, ind = c(1, 2, 3, 4, 5))
+knitr::opts_chunk$set(echo = TRUE)
+
+list.of.packages = c("kableExtra", "ggplot2", "nortest", "car", "gplots", "agricolae")
+
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+
+if(length(new.packages)) {
+  install.packages(new.packages, dependencies = TRUE)
+}
+```
+
+```{r required_libraries, echo = FALSE, output = FALSE}
+# Load required libraries
+library("kableExtra")
+library("ggplot2")
+library("nortest")
+library("car")
+library("gplots")
+library("agricolae")
+```
+
+```{r character_encoding, output = FALSE, echo = FALSE}
+Sys.setlocale(category = "LC_ALL", locale = "Greek_Greece.1253")
+```
+
+```{r global_functions, echo = FALSE}
+#' Draw normal distribution PDF with a shaded area.
+#'
+#' @param lb Lower bound of the shaded area. Use \code{-Inf} for a left tail.
+#' @param ub Upper bound of the shaded area. Use \code{Inf} for a right tail.
+#' @param mean Mean of the normal distribution
+#' @param sd Standard deviation of the normal distribution
+#' @param limits Lower and upper bounds on the x-axis of the area displayed.
+#' @return ggplot object.
+normal_prob_area_plot = function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 * sd, mean + 4 * sd), fill = "lightblue", alpha = .7) {
+    x = seq(limits[1], limits[2], length.out = 100)
+    xmin = max(lb, limits[1])
+    xmax = min(ub, limits[2])
+    areax = seq(xmin, xmax, length.out = 100)
+    area = data.frame(x = areax, ymin = 0, ymax = dnorm(areax, mean = mean, sd = sd))
+    (
+      ggplot() + 
+      geom_line(data.frame(x = x, y = dnorm(x, mean = mean, sd = sd)), mapping = aes(x = x, y = y)) +
+      geom_ribbon(data = area, mapping = aes(x = x, ymin = ymin, ymax = ymax), fill = fill, alpha = alpha) + 
+      scale_x_continuous(limits = limits)
+    ) +
+    labs(title = substitute(
+        paste("X ~ N(", mu, " = ", mean, ", ", sigma ^ 2, " = ", var, ")"),
+        list(lb = lb, ub = ub, mean = round(mean), var = round(sd ^ 2))
+      )
+    ) + 
+    xlab("X") + 
+    ylab("f(X)")
+}
+
+#' Draw t-distribution PDF with a shaded area.
+#'
+#' @param lb Lower bound of the shaded area. Use \code{-Inf} for a left tail.
+#' @param ub Upper bound of the shaded area. Use \code{Inf} for a right tail.
+#' @param df Degrees of freedom
+#' @param limits Lower and upper bounds on the x-axis of the area displayed.
+#' @return ggplot object.
+t_prob_area_plot = function(lb, ub, df = 1, limits = c(-4, 4), fill = "lightblue", alpha = .7) {
+    x = seq(limits[1], limits[2], length.out = 100)
+    xmin = max(lb, limits[1])
+    xmax = min(ub, limits[2])
+    areax = seq(xmin, xmax, length.out = 100)
+    area = data.frame(x = areax, ymin = 0, ymax = dt(areax, df = df))
+    (
+      ggplot() + 
+      geom_vline(xintercept = lb, linetype = "dashed", color = "orange", size = 1) +
+      geom_line(data.frame(x = x, y = dt(x, df = df)), mapping = aes(x = x, y = y)) +
+      geom_ribbon(data = area, mapping = aes(x = x, ymin = ymin, ymax = ymax), fill = fill, alpha = alpha) + 
+      scale_x_continuous(limits = limits)
+    ) +
+    labs(title = substitute(
+        paste("X ~ t(", df, " = ", dof, ")"),
+        list(lb = lb, ub = ub, dof = df)
+      )
+    ) + 
+    xlab("X") + 
+    ylab("f(X)")
+}
+
+#' Plot a Z or T distribution PDF with rejection region(s) at the alpha significance level.
+#'
+#' @param alpha Significance level.
+#' @param num_tail "left", "right" or "two.sided".
+#' @param dist Which distribution to use (Z or T).
+#' @param tdof Degrees of freedom for the t-distribbution.
+#' @return ggplot object.
+plot_rejection_region = function(alpha = 0.05, num_tails = "two.sided", dist = "Z", tdof = 1) {
+  x = seq(-5, 5, 0.01)
+  
+  if(num_tails == "two.sided") {
+    tail_alpha = alpha / 2
+    tails = 2
+  } 
+  else {
+    tail_alpha = alpha
+    
+    if (num_tails == "left") {
+      tails = -1
+    } 
+    else {
+      tails = 1
+    }
+  }
+  
+  if(dist == "t") {
+    pdf = dt(x, tdof)
+    
+    critical_value = qt(tail_alpha, tdof)
+    plot_title = paste("Περιοχές απόρριψης της ", dist, " κατανομής", " με ", tdof, " βαθμούς ελευθερίας, για α = ", formatC(tail_alpha, 3), sep = "")
+  }
+  else if (dist == "Z") {
+    pdf = dnorm(x)
+    
+    critical_value = qnorm(tail_alpha)
+    plot_title = paste("Περιοχές απόρριψης της ", dist, " κατανομής για α = ", formatC(tail_alpha, 3), sep = "")
+  } 
+  else {
+    pdf = dnorm(x)
+    critical_value = qnorm(tail_alpha)
+    plot_title = paste("Περιοχές απόρριψης της ", dist, " κατανομής για α = ", formatC(alpha, 3), sep = "")
+  }
+    
+  # Create dataframe based on x, y data
+  dd = data.frame(x, pdf)
+  
+  # Plot density as line plot
+  graph = qplot(x, pdf, data = dd, geom = "line")
+  graph = graph + ggtitle(plot_title) 
+    
+  plot_title_format = element_text(lineheight = 3, face = "bold", color = "black", size = 12)
+    
+  graph = graph + labs(title = plot_title, x = "x", y = "f(x)") + theme(plot.title = plot_title_format)
+  
+  # Fill left tail if needed
+  if(tails == -1 || tails == 2) {
+    # The geom_ribbon provides the fill and geom_vline the vertical "fence"
+    graph = graph + geom_ribbon(data = subset(dd, x <= critical_value), aes(ymax = pdf), ymin = 0, fill = "red", colour = NA, alpha = 0.5) +
+    geom_vline(aes(xintercept = critical_value), color = "red", linetype = "dashed", size = 1)
+      
+    graph_label = paste("Απόρριψη της H0 για ", "\n", " τιμή ελέγχου < ", formatC(critical_value, 3))
+    
+    graph = graph + annotate("text", x = -3.75, y = 0.10, label = graph_label)
+  }
+  
+  # Fill right tail if needed
+  if(tails == 1 || tails == 2) {
+    graph = graph + geom_ribbon(data = subset(dd, x >= -critical_value), aes(ymax = pdf), ymin = 0, fill = "red", colour = NA, alpha = 0.5) +
+    geom_vline(aes(xintercept = -critical_value), color = "red", linetype = "dashed", size = 1)
+    
+    graph_label = paste("Απόρριψη της H0 για ","\n", " τιμή ελέγχου > ", formatC(-critical_value, 3))
+    
+    graph = graph + annotate("text", x = 3.75, y = 0.10, label = graph_label)
+  }
+  
+  # Center the graph title
+  graph = graph + theme(plot.title = element_text(hjust = 0.5))
+    
+  print(graph)
+}
+```
+
+### Άσκηση 1
+
+<p style="line-height: 1.8em;">
+Φάρμακο χορηγείται σε ασθενείς που εμφανίζουν υψηλή συστολική πίεση. Οι υπεύθυνοι της φαρμακευτικής εταιρίας που το παράγει ενδιαφέρονται να μελετήσουν την αποτελεσματικότητα του φαρμάκου. Για το σκοπό αυτό επιλέχθηκαν με τυχαίο τρόπο 9 ασθενείς και μετρήθηκε η συστολική πίεση αμέσως πριν και 2 ώρες μετά τη λήψη 25 mg του φαρμάκου. Οι μετρήσεις συνοψίζονται στον Πίνακα 1.
+</p>
+
+<br/>
+
+<center>**Πίνακας 1**: Συστολική πίεση (mm Hg) πριν και μετά την χορήγηση του φαρμάκου</center>
+
+<br/>
+
+```{r ex_1_data_table, echo = FALSE}
+# Create a vector for each column
+patient_id = c(1, 2, 3, 4, 5, 6, 7, 8, 9)
+blood_pressure_before = c(210, 180, 187, 175, 175, 176, 190, 206, 173)
+blood_pressure_after = c(201, 175, 184, 170, 168, 169, 183, 199, 168)
+
+# Create a data frame from column vectors
+ex_1.data = data.frame(patient_id, blood_pressure_before, blood_pressure_after)
+
+# Change column labels
+colnames(ex_1.data) = c("Αύξων Αριθμός Ασθενή", "Συστολική Πίεση Πριν", "Συστολική Πίεση Μετά")
+
+# Render the table
+ex_1.data %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+<br/>
+<br/>
+
+##### Πρόλογος απαντήσεων
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Το πλήθος των παρατηρήσεων ($n=9$) δημιουργεί ενδοιασμούς σχετικά με το κατά πόσο τα δεδομένα ακολουθούν κανονική κατανομή. Είναι δόκιμο να προχωρήσουμε σε ελέγχους κανονικότητας πριν την ανάλυσή μας.
+</p>
+
+<p style="line-height: 1.8em;">
+Ένας τρόπος ελέγχου της κανονικότητας παρέχεται από την μέθοδο Normal QQ Plot, ώστε με οπτικό τρόπο να προχωρήσουμε σε μία πρώτη εκτίμηση της κανονικότητας στα δεδομένα μας:
+</p>
+
+```{r ex_1_norm_qqplot_1, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 1α: Normal QQ plot της μεταβλητής 'Συστολική Πίεση Πριν'", echo = FALSE}
+qqnorm(ex_1.data[["Συστολική Πίεση Πριν"]], main = "Normal QQ plot μεταβλητής 'Συστολική Πίεση Πριν'")
+qqline(ex_1.data[["Συστολική Πίεση Πριν"]], col = "red", lty = 1, lwd = 2)
+```
+
+```{r ex_1_norm_qqplot_2, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 1α: Normal QQ plot της μεταβλητής 'Συστολική Πίεση Μετά'", echo = FALSE}
+qqnorm(ex_1.data[["Συστολική Πίεση Μετά"]], main = "Normal QQ plot μεταβλητής 'Συστολική Πίεση Μετά'")
+qqline(ex_1.data[["Συστολική Πίεση Μετά"]], col = "red", lty = 1, lwd = 2)
+```
+
+```{r ex_1_ks_test_1, echo = FALSE}
+ks.test(ex_1.data[["Συστολική Πίεση Πριν"]], "pnorm", 0, 1)
+```
+
+```{r ex_1_ks_test_2, echo = FALSE}
+ks.test(ex_1.data[["Συστολική Πίεση Μετά"]], "pnorm", 0, 1)
+```
+
+```{r ex_1_ad_test_1, echo = FALSE}
+ad.test(ex_1.data[["Συστολική Πίεση Πριν"]])
+```
+
+```{r ex_1_ad_test_2, echo = FALSE}
+ad.test(ex_1.data[["Συστολική Πίεση Μετά"]])
+```
+
+
+<p style="line-height: 1.8em;">
+<mark>Παρατηρούμε ότι οι τυχαίες μεταβλητές "Συστολική Πίεση Πριν" και "Συστολική Πίεση Μετά" δεν φαίνεται να ακολουθούν κανονική κατανομή, εμφανίζοντας μεγάλες "ουρές" (skewness). Στο συμπέρασμα αυτό καταλήγουμε λόγω του οπτικού ελέγχου του normal QQ plot, ενισχυόμενου από τον έλεγχο Kolmogorov-Smirnov. 
+<br/>
+<br/>
+Εντούτοις, δεχόμαστε με επιφυλάξεις την κανονικότητα των δεδομένων, κυρίως λόγω του ελέγχου Anderson-Darling, οποίος θεωρείται πιο ισχυρός έλεγχος της κανονικότητας και του οποίου το p-value είναι μεγαλύτερο από επίπεδο σημαντικότητας $\alpha = 0.05$.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+α) Να κατασκευάσετε ένα $95\%$ διάστημα εμπιστοσύνης για την μέση συστολική πίεση των ασθενών πριν τη χορήγηση του φαρμάκου.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ο τύπος κατασκευής του διαστήματος εμπιστοσύνης για μέσο $\mu$ με άγνωστη διακύμανση είναι:
+</p>
+
+$$\overline{x} - t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{s}{\sqrt{n}} \lt \mu \lt \overline{x} + t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{s}{\sqrt{n}} \text{ } (\scriptstyle{1\alpha_1})$$
+
+<p style="line-height: 1.8em;">
+Το πλήθος παρατηρήσεων $n$ είναι:
+</p>
+
+```{r ex_1_n_1, echo = FALSE}
+ex_1_n_1 = nrow(ex_1.data)
+```
+
+$n = `r ex_1_n_1`$
+
+<p style="line-height: 1.8em;">
+Ο δειγματικός μέσος $\overline{x}$ είναι:
+</p>
+
+```{r ex_1a_x_bar_1, echo = FALSE}
+ex_1a_x_bar_1 = round(mean(ex_1.data[["Συστολική Πίεση Πριν"]]), 3)
+```
+
+$\overline{x} = `r ex_1a_x_bar_1`$
+
+<p style="line-height: 1.8em;">
+Εκτιμούμε την τυπική απόκλιση του πληθυσμού $\sigma$ με την δειγματική τυπική απόκλιση $s$:
+</p>
+
+```{r ex_1a_sd_1, echo = FALSE}
+ex_1a_sd_1 = round(sd(ex_1.data[["Συστολική Πίεση Πριν"]]), 3)
+```
+
+$s = `r ex_1a_sd_1`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κατανομής $t$ για $n-1 = `r ex_1_n_1 - 1`$ βαθμούς ελευθερίας και $\frac{1-\alpha}{2} = \frac{1-0.95}{2} = `r (1-0.95)/2`$ δίνεται με την χρήση R ως εξής:
+</p>
+
+```{r ex_1a_t_crit_1, echo = FALSE}
+ex_1a_t_crit_1 = round(qt(p = 0.975, df = ex_1_n_1 - 1), 3)
+```
+
+$t_{crit} = `r ex_1a_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο ($\scriptstyle(1\alpha_1)$) έχουμε:
+</p>
+
+```{r ex_1a_bounds_1, echo = FALSE}
+# Lower bound
+ex_1a_L_1 = round(ex_1a_x_bar_1 - (ex_1a_t_crit_1 * (ex_1a_sd_1 / sqrt(ex_1_n_1))), 3)
+# Upper bound
+ex_1a_U_1 = round(ex_1a_x_bar_1 + (ex_1a_t_crit_1 * (ex_1a_sd_1 / sqrt(ex_1_n_1))), 3)
+```
+$\text{lower bound} = `r ex_1a_L_1`$
+<br/>
+$\text{upper bound} = `r ex_1a_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως to διάστημα εμπιστοσύνης για την μέση συστολική πίεση των ασθενών πριν τη χορήγηση του φαρμάκου είναι $`r ex_1a_L_1` \lt \mu \lt `r ex_1a_U_1`$</mark>.
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+β) Να κατασκευάσετε ένα $90\%$ διάστημα εμπιστοσύνης για την μέση συστολική πίεση των ασθενών μετά τη χορήγηση του φαρμάκου.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ομοίως με (α), ο τύπος κατασκευής του διαστήματος εμπιστοσύνης για μέσο $\mu$ με άγνωστη διακύμανση είναι:
+</p>
+
+$$\overline{x} - t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{s}{\sqrt{n}} \lt \mu \lt \overline{x} + t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{s}{\sqrt{n}} \text{ } \scriptstyle(1\beta_1)$$
+
+<p style="line-height: 1.8em;">
+Ο δειγματικός μέσος $\overline{x}$ είναι:
+</p>
+
+```{r ex_1b_x_bar_1, echo = FALSE}
+ex_1b_x_bar_1 = round(mean(ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+
+$\overline{x} = `r ex_1b_x_bar_1`$
+
+<p style="line-height: 1.8em;">
+Εκτιμούμε την τυπική απόκλιση του πληθυσμού $\sigma$ με την δειγματική τυπική απόκλιση $s$:
+</p>
+
+```{r ex_1b_sd_1, echo = FALSE}
+ex_1b_sd_1 = round(sd(ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+
+$s = `r ex_1b_sd_1`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κατανομής $t$ για $n-1 = `r ex_1_n_1 - 1`$ βαθμούς ελευθερίας και $\frac{1-\alpha}{2} = \frac{1-0.9}{2} = `r (1-0.9)/2`$ δίνεται με την χρήση R ως εξής:
+</p>
+
+```{r ex_1b_t_crit_1, echo = FALSE}
+ex_1b_t_crit_1 = round(qt(p = 0.95, df = ex_1_n_1 - 1), 3)
+```
+
+$t_{crit} = `r ex_1b_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο $\scriptstyle(1\beta_1)$ έχουμε:
+</p>
+
+```{r ex_1b_bounds_1, echo = FALSE}
+# Lower bound
+ex_1b_L_1 = round(ex_1b_x_bar_1 - (ex_1b_t_crit_1 * (ex_1b_sd_1 / sqrt(ex_1_n_1))), 3)
+# Upper bound
+ex_1b_U_1 = round(ex_1b_x_bar_1 + (ex_1b_t_crit_1 * (ex_1b_sd_1 / sqrt(ex_1_n_1))), 3)
+```
+$\text{lower bound} = `r ex_1b_L_1`$
+<br/>
+$\text{upper bound} = `r ex_1b_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως to διάστημα εμπιστοσύνης για την μέση συστολική πίεση των ασθενών πριν τη χορήγηση του φαρμάκου είναι $`r ex_1b_L_1` \lt \mu \lt `r ex_1b_U_1`$</mark>.
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+γ) Να κατασκευάσετε ένα $95\%$ διάστημα εμπιστοσύνης για την μέση διαφορά της συστολικής πίεσης των ασθενών πριν και μετά τη χορήγηση του φαρμάκου.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ο τύπος κατασκευής διαστήματος εμπιστοσύνης για την διαφορά μέσων $\mu_1, \mu_2$ εξαρτημένων δειγμάτων είναι:
+</p>
+
+$$\overline{d} - t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{\hat{\sigma_d}}{\sqrt{n}} \lt \mu \lt \overline{d} + t_{n-1, \frac{1-\alpha}{2}} \cdot \frac{\hat{\sigma_d}}{\sqrt{n}} \text{ } \scriptstyle(1\gamma_1)$$
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε τον μέσο της διαφοράς των παρατηρήσεων $\overline{d}$:
+</p>
+
+```{r ex_1c_d_bar_1, echo = FALSE}
+ex_1c_d_bar_1 = round(mean(ex_1.data[["Συστολική Πίεση Πριν"]] - ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+$\overline{d} = `r ex_1c_d_bar_1`$
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε την τυπική απόκλιση της διαφοράς των παρατηρήσεων $\hat{\sigma_d}$:
+</p>
+
+```{r ex_1c_sigma_d_hat_1, echo = FALSE}
+ex_1c_sigma_d_hat_1 = round(sd(ex_1.data[["Συστολική Πίεση Πριν"]] - ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+$\hat{\sigma_d} = `r ex_1c_sigma_d_hat_1`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κατανομής $t$ για $n-1 = `r ex_1_n_1 - 1`$ βαθμούς ελευθερίας και $\frac{1-\alpha}{2} = \frac{1-0.95}{2} = `r (1-0.95)/2`$ δίνεται με την χρήση R ως εξής:
+</p>
+
+```{r ex_1c_t_crit_1, echo = FALSE}
+ex_1c_t_crit_1 = round(qt(p = 0.975, df = ex_1_n_1 - 1), 3)
+```
+
+$t_{crit} = `r ex_1c_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο $\scriptstyle(1\gamma_1)$ έχουμε:
+</p>
+
+```{r ex_1c_bounds_1, echo = FALSE}
+# Lower bound
+ex_1c_L_1 = round(ex_1c_d_bar_1 - ex_1c_t_crit_1 * (ex_1c_sigma_d_hat_1 / sqrt(ex_1_n_1)), 3)
+# Upper bound
+ex_1c_U_1 = round(ex_1c_d_bar_1 + ex_1c_t_crit_1 * (ex_1c_sigma_d_hat_1 / sqrt(ex_1_n_1)), 3)
+```
+$\text{lower bound} = `r ex_1c_L_1`$
+<br/>
+$\text{upper bound} = `r ex_1c_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως τo διάστημα εμπιστοσύνης για την μέση διαφορά της συστολικής πίεσης των ασθενών πριν και μετά τη χορήγηση του φαρμάκου είναι $`r ex_1c_L_1` \lt \mu \lt `r ex_1c_U_1`$</mark>.
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+δ) Να διεξάγετε τον ακόλουθο έλεγχο υποθέσεων
+</p>
+
+<br/>
+
+$$H_0: \mu_1 = \mu_2$$
+$$H_A: \mu_1 \gt \mu_2$$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+όπου $\mu_1$ είναι η μέση συστολική πίεση των ασθενών στον πληθυσμό πρίν τη χορήγηση του φαρμάκου, και $\mu_2$ είναι η μέση συστολική πίεση των ασθενών στον πληθυσμό μετά τη χορήγηση του φαρμάκου. Να χρησιμοποιήσετε επίπεδο σημαντικότητας $\alpha=0.05$. Σε ποιο συμπέρασμα καταλήγετε όσον αφορά την αποτελεσματικότητα του φαρμάκου;
+<p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>1ος τρόπος επίλυσης (περιοχή απόρριψης)</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Διερευνούμε την περίπτωση εξαρτημένων δειγμάτων (επαναληπτικές μετρήσεις του ίδιου δείγματος) με άγνωστες διακυμάνσεις. Επιπλέον, ο έλεγχος που καλούμαστε να πραγματοποιήσουμε είναι μονόπλευρος. Η στατιστική ελέγχου που θα χρησιμοποιήσουμε είναι η εξής:
+</p>
+
+$$t = \frac{\overline{d}}{\frac{s_d}{\sqrt{n}}} \text{ } \scriptstyle{1_\delta\alpha}$$
+<p style="line-height: 1.8em;">
+Υπολογίζουμε τον μέσο της διαφοράς των μεταβλητών του δείγματος $\overline{d}$:
+```{r ex_1d_d_mean, echo = FALSE}
+ex_1d_d_mean = round(mean(ex_1.data[["Συστολική Πίεση Πριν"]] - ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+$\overline{d} = `r ex_1d_d_mean`$
+</p>
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε την τυπική απόκλιση της διαφοράς των μεταβλητών του δείγματος $s_d$:
+```{r ex_1d_d_sd, echo = FALSE}
+ex_1d_d_sd = round(sd(ex_1.data[["Συστολική Πίεση Πριν"]] - ex_1.data[["Συστολική Πίεση Μετά"]]), 3)
+```
+$s_d = `r ex_1d_d_sd`$
+</p>
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της t-κατανομής δίνεται από:
+</p>
+```{r ex_1d_t_crit_1, echo = FALSE}
+ex_1d_t_crit_1 = round(qt(p = 0.05, df = ex_1_n_1 - 1, lower.tail = FALSE), 3)
+```
+$t_{crit} = `r ex_1d_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Η περιοχή απόρριψης για $\alpha = 0.05$ δίνεται διαγραμματικά στο σχήμα $\scriptstyle{1\beta_1}$:
+</p>
+
+<br/>
+
+```{r ex_1d_rejection_region_figure, fig.width = 8, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 1β1: περιοχές απόρριψης της t-κατανομής για α = 0.05 (μονόπλευρος έλεγχος", echo = FALSE}
+plot_rejection_region(alpha = 0.05, num_tails = "right", dist = "t", tdof = ex_1_n_1 - 1)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Χρησιμοποιούμε τον τύπο $\scriptstyle{1_\delta\alpha}$ για να βρούμε την τιμή της στατιστικής ελέγχου:
+</p>
+```{r ex_1d_test_statistic_1, echo = FALSE}
+ex_1d_test_statistic_1 = round(ex_1d_d_mean / (ex_1d_d_sd / sqrt(ex_1_n_1)), 3)
+```
+$\text{test statistic} = `r ex_1d_test_statistic_1`$
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως, δεδομένου ότι η τιμή της στατιστικής ελέγχουν είναι σημαντικά μεγαλύτερη από την κρίσιμη τιμή της t-κατανομής για επίπεδο σημαντικότητας $\alpha = 0.05$, απορρίπτουμε την μηδενική υπόθεση $H_0$ για επίπεδο σημαντικότητας $\alpha = 0.05$ και καταλήγουμε στο συμπέρασμα ότι τα δεδομένα δείχνουν ότι η μέση συστολική πίεση των ασθενών στον πληθυσμό πριν τη χορήγηση του φαρμάκου είναι στατιστικά μεγαλύτερη από την μέση συστολική πίεση των ασθενών στον πληθυσμό μετά τη χορήγηση του φαρμάκου.</mark>
+<p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>2ος τρόπος επίλυσης (paired t-test)</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Πραγματοποιούμε paired t-test στα δεδομένα ως εξής:
+</p>
+```{r ex_1d_paired_t_test, echo = FALSE}
+ex_1d_paired_t_test_1 = t.test(x = ex_1.data[["Συστολική Πίεση Πριν"]], y = ex_1.data[["Συστολική Πίεση Μετά"]], data = ex_1.data, alternative = "greater", paired = TRUE, var.equal = FALSE, conf.level = 0.95)
+
+print(ex_1d_paired_t_test_1)
+
+ex_1d_paired_t_test_p_value_1 = ex_1d_paired_t_test_1["p.value"]
+```
+
+<p style="line-height: 1.8em;">
+<mark>Με $p-value = `r ex_1d_paired_t_test_p_value_1`$, καταλήγουμε στο συμπέρασμα ότι η πιθανότητα να παρατηρήσουμε τα δεδομένα μας κάτω από την μηδενική υπόθεση είναι ελάχιστη, σε επίπεδο σημαντικότητας $\alpha = 0.05$. Επομένως, απορρίπτουμε την μηδενική υπόθεση προς όφελος της εναλλακτικής και καταλήγουμε στο συμπέρασμα ότι, σύμφωνα με τα δεδομένα μας, η μέση συστολική πίεση των ασθενών στον πληθυσμό πριν τη χορήγηση του φαρμάκου είναι στατιστικά μεγαλύτερη από την μέση συστολική πίεση των ασθενών στον πληθυσμό μετά τη χορήγηση του φαρμάκου.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+ε) Να απαντήσετε τα παραπάνω ερωτήματα με τη χρήση του R. Να δώσετε τον κώδικα R, που γράψατε προκειμένου να απαντήσετε στα ερωτήματα (α)-(δ).
+</p>
+
+<br/>
+
+***
+
+<br/>
+
+### Άσκηση 2
+
+<p style="line-height: 1.8em;">
+Ο πρόεδρος κάποιου τμήματος οικονομικής σχολής ενδιαφέρεται να εξετάσει την απόδοση των φοιτητών σε δύο από τα βασικά μαθήματα του τμήματος (Εισαγωγή στο Μάρκετινγκ, Λογιστική), καθώς και τον βαθμό ικανοποίησης των φοιτητών από το πρόγραμμα σπουδών του τμήματος. Επίσης, ενδιαφέρεται να μελετήσει αν η απόδοση και ο βαθμός ικανοποίησης των αγοριών διαφέρουν σε σχέση με αυτή των κοριτσιών. Για το λόγο αυτό επέλεξε με τυχαίο τρόπο 30 φοιτητές και φοιτήτριες του τμήματος που εξετάστηκαν κατά το τρέχον έτος και στα δύο αυτά μαθήματα, κατέγραψε την απόδοση τους και την απάντησή τους στο ερώτημα «Είστε ικανοποιημένοι από το πρόγραμμα σπουδών του τμήματος;». Τα αποτελέσματα παρουσιάζονται στον πίνακα 2:
+</p>
+
+<br/>
+
+<center>**Πίνακας 2**: Φύλο (1:αγόρι, 2: κορίτσι), απόδοση και ικανοποίηση (1: ναι, 0: όχι)</center>
+
+<br/>
+
+```{r ex_2_data_table, echo = FALSE}
+# Create a vector for each column
+gender = c(1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1)
+intro_to_marketing_grade = c(99, 89, 32, 44, 45, 25, 47, 86, 97, 94, 55, 61, 94, 55, 66, 60, 83, 67, 46, 52, 29, 54, 25, 90, 33, 77, 79, 97, 100, 25)
+accounting_grade = c(89, 92, 37, 51, 74, 57, 30, 55, 49, 45, 68, 47, 87, 34, 36, 59, 94, 42, 28, 39, 61, 56, 49, 80, 29, 55, 46, 93, 92, 64)
+satisfaction_index = c(1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1)
+
+# Create a data frame from columns
+ex_2.data = data.frame(gender, intro_to_marketing_grade, accounting_grade, satisfaction_index)
+
+# Change column labels
+colnames(ex_2.data) = c("Φύλο", "Εισαγωγή στο Μάρκετινγκ", "Λογιστική", "Ικανοποίηση")
+
+# Convert columns to factors
+#ex_2.data["Φύλο"] = as.factor(ex_2.data["Φύλο"])
+#ex_2.data["Ικανοποίηση"] = as.factor(ex_2.data["Ικανοποίηση"])
+
+# Render the table
+ex_2.data %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Να απαντήσετε στα παρακάτω ερωτήματα αναλυτικά. Λόγω του πλήθους των δεδομένων να χρησιμοποιήσετε στους υπολογισμούς σας το πακέτο R.
+</p>
+
+<p style="line-height: 1.8em;">
+α) Να βρεθεί το ποσοστό των φοιτητών/τριών που είναι ικανοποιημένοι από το πρόγραμμα σπουδών για το σύνολο του δείγματος. Να κατασκευάσετε ένα $95\%$ διάστημα εμπιστοσύνης για το ποσοστό $p$ στον πληθυσμό.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Το συνολικό πλήθος παρατηρήσεων $n$ είναι:
+</p>
+
+```{r ex_2_n_1, echo = FALSE}
+ex_2_n_1 = nrow(ex_2.data)
+```
+
+$n = `r ex_2_n_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+α) Το ποσοστό φοιτητών / τριών $\hat{p}$ που είναι ικανοποιημένοι από το πρόγραμμα σπουδών εκτιμάται από το δείγμα ως εξής:
+</p>
+```{r ex_2a_p_1, echo = FALSE}
+# Values in column "Ικανοποίηση" are numeric, therefore it is enougn to sum all that
+# equal 1 and divide by the total number of rows to find the percentage.
+ex_2a_p_1 = round(length(which(ex_2.data["Ικανοποίηση"] == 1)) / nrow(ex_2.data), 3)
+
+
+```
+$\hat{p} = `r ex_2a_p_1`$
+
+<p style="line-height: 1.8em;">
+Ο τύπος κατασκευής διαστήματος εμπιστοσύνης για το ποσοστό πληθυσμού $p$ είναι:
+</p>
+
+$$\hat{p} - Z_\frac{1-\alpha}{2} \cdot \sqrt{\frac{\hat{p} \cdot (1-\hat{p})}{n}} \lt p \lt \hat{p} + Z_\frac{1-\alpha}{2} \cdot \sqrt{\frac{\hat{p} \cdot (1-\hat{p})}{n}} \text{ } (\scriptstyle{2\alpha_1})$$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή $Ζ$ για κατασκευή διαστήματος εμπιστοσύνης $95\%$ υπολογίζεται ως εξής:
+</p>
+```{r ex_2a_z_crit_1, echo = FALSE}
+ex_2a_z_crit_1 = round(qnorm(p = 0.975, mean = 0, sd = 1), 3)
+```
+$Z_{crit} = `r ex_2a_z_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο ($\scriptstyle{2\alpha_1}$) έχουμε:
+</p>
+```{r ex_2a_bounds_1, echo = FALSE}
+# Lower bound
+ex_2a_L_1 = round(ex_2a_p_1 - ex_2a_z_crit_1 * sqrt((ex_2a_p_1 * (1 - ex_2a_p_1)) / ex_2_n_1), 3)
+# Upper bound
+ex_2a_U_1 = round(ex_2a_p_1 + ex_2a_z_crit_1 * sqrt((ex_2a_p_1 * (1 - ex_2a_p_1)) / ex_2_n_1), 3)
+```
+$\text{lower bound} = `r ex_2a_L_1`$
+<br/>
+$\text{upper bound} = `r ex_2a_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως τo διάστημα εμπιστοσύνης για το ποσοστό των φοιτητών/τριών που είναι ικανοποιημένοι από το πρόγραμμα σπουδών είναι $`r ex_2a_L_1` \lt p \lt `r ex_2a_U_1`$.</mark>
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+β) Να κατασκευάσετε ένα $99\%$ διάστημα εμπιστοσύνης για τη διαφορά των ποσοστών $p_1-p_2$ στον πληθυσμό, όπου $p_1$ είναι το ποσοστό των φοιτητών που είναι ικανοποιημένοι από το πρόγραμμα σπουδών και $p_2$ είναι το ποσοστό των φοιτητριών που είναι ικανοποιημένες από το πρόγραμμα σπουδών.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Έστω $\hat{p}_1$, $\hat{p}_2$ οι εκτιμητές των ποσοστών φοιτητών και φοιτητριών αντίστοιχα. Ο τύπος κατασκευής διαστήματος εμπιστοσύνης για διαφορά του ποσοστού $p_1 - p_2$ είναι:
+</p>
+$$(\hat{p_1} - \hat{p_2}) - Z_\frac{1-\alpha}{2} \cdot \sqrt{\frac{\hat{p_1}  \cdot (1 - \hat{p_1})}{n_1} + \frac{\hat{p_2} \cdot (1 - \hat{p_2})}{n_2}} \lt p_1 - p_2 \lt (\hat{p_1} - \hat{p_2}) + Z_\frac{1-\alpha}{2} \cdot \sqrt{\frac{\hat{p_1}  \cdot (1 - \hat{p_1})}{n_1} + \frac{\hat{p_2} \cdot (1 - \hat{p_2})}{n_2}} \text{ } \scriptstyle{(2\beta_1)}$$
+
+<p style="line-height: 1.8em;">
+Το πλήθος των παρατηρήσεων $n_1$ (φοιτητές) είναι:
+</p>
+```{r ex_2b_n_1, echo = FALSE}
+ex_2b_n_1 = length(which(ex_2.data["Φύλο"] == 1))
+```
+$n_1 = `r ex_2b_n_1`$
+
+<p style="line-height: 1.8em;">
+Το πλήθος των παρατηρήσεων $n_2$ (φοιτήτριες) είναι:
+</p>
+```{r ex_2b_n_2, echo = FALSE}
+ex_2b_n_2 = length(which(ex_2.data["Φύλο"] == 2))
+```
+$n_2 = `r ex_2b_n_2`$
+
+<p style="line-height: 1.8em;">
+Το εκτιμώμενο ποσοστό $\hat{p_1}$ είναι:
+</p>
+```{r ex_2b_p_1, echo = FALSE}
+ex_2b_p_1 = round(length(which((ex_2.data["Φύλο"] == 1 & ex_2.data["Ικανοποίηση"] == 1))) / ex_2b_n_1, 3)
+```
+$\hat{p_1} = `r ex_2b_p_1`$
+
+<p style="line-height: 1.8em;">
+Το εκτιμώμενο ποσοστό $\hat{p_2}$ είναι:
+</p>
+```{r ex_2b_p_2, echo = FALSE}
+ex_2b_p_2 = round(length(which((ex_2.data["Φύλο"] == 2 & ex_2.data["Ικανοποίηση"] == 1))) / ex_2b_n_2, 3)
+```
+$\hat{p_2} = `r ex_2b_p_2`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή $Ζ$ για κατασκευή διαστήματος εμπιστοσύνης $99\%$ υπολογίζεται ως εξής:
+</p>
+```{r ex_2b_z_crit_1, echo = FALSE}
+ex_2b_z_crit_1 = round(qnorm(p = 0.995, mean = 0, sd = 1), 3)
+```
+$Z_{crit} = `r ex_2b_z_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο ($\scriptstyle{2\beta_1}$) έχουμε:
+</p>
+```{r ex_2b_bounds_1, echo = FALSE}
+# Lower bound
+ex_2b_L_1 = round( (ex_2b_p_1 - ex_2b_p_2) - (ex_2b_z_crit_1 * sqrt( (ex_2b_p_1 * ( ( (1 - ex_2b_p_1) / ex_2b_n_1 ) ) + (ex_2b_p_2 * ( (1 - ex_2b_p_2) / ex_2b_n_2) ) ) ) ) , 3)
+# Upper bound
+ex_2b_U_1 = round( (ex_2b_p_1 - ex_2b_p_2) + (ex_2b_z_crit_1 * sqrt( (ex_2b_p_1 * ( ( (1 - ex_2b_p_1) / ex_2b_n_1) ) + (ex_2b_p_2 * ( (1 - ex_2b_p_2) / ex_2b_n_2) ) ) ) ), 3)
+```
+$\text{lower bound} = `r ex_2b_L_1`$
+<br/>
+$\text{upper bound} = `r ex_2b_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως τo διάστημα εμπιστοσύνης για την διαφορά των ποσοστών των φοιτητών/τριών που είναι ικανοποιημένοι από το πρόγραμμα σπουδών είναι $`r ex_2b_L_1` \lt p_1 - p_2 \lt `r ex_2b_U_1`$.</mark>
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+γ) Να εξετάσετε αν υπάρχει στατιστικά σημαντική διαφορά στο ποσοστό των φοιτητών και φοιτητριών που είναι ικανοποιημένοι/ες από το πρόγραμμα σπουδών [Να χρησιμοποιήσετε επίπεδο σημαντικότητας $\alpha=0.05$].
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Προχωρούμε σε έλεγχο υποθέσεων για τη διαφορά των ποσοστών $\hat{p_1}$ και $\hat{p_2}$. Το ζεύγος των υποθέσεων που μας ενδιαφέρει να εξετάσουμε είναι:
+</p>
+$H_0: \hat{p}_1 = \hat{p}_2$
+<br/>
+$H_A: \hat{p}_1 \neq \hat{p}_2$
+
+<p style="line-height: 1.8em;">
+Τα εκτιμώμενα ποσοστά ικανοποίησης, ανά φύλο, έχουν ήδη βρεθεί στο σκέλος (β) της άσκησης και είναι:
+</p>
+$\hat{p_1} = `r ex_2b_p_1`$
+<br/>
+$\hat{p_2} = `r ex_2b_p_2`$
+<br/>
+
+<p style="line-height: 1.8em;">
+Η συνάρτηση ελέγχου δίνεται από:
+</p>
+$$Z = \frac{\hat{p_1} - \hat{p_2}} {\sqrt{\frac{\hat{p_1} \cdot (1-\hat{p_1})}{n_1} + \frac{\hat{p_2} \cdot (1-\hat{p_2})}{n_2} }} \text{ } \scriptstyle{(1\gamma_1)}$$
+<br/>
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στην $\scriptstyle{(1\gamma_1)}$ έχουμε:
+</p>
+```{r ex_2c_z_1, echo = FALSE}
+ex_2c_z_1 = round( (ex_2b_p_1 - ex_2b_p_2) / sqrt( ( (ex_2b_p_1 * (1 - ex_2b_p_1) ) / ex_2b_n_1) + ( (ex_2b_p_2 * (1 - ex_2b_p_2) ) / ex_2b_n_2) ), 3)
+```
+$Ζ = `r ex_2c_z_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κανονικής κατανομής για επίπεδο σημαντικότητας $\alpha = 0.05$ είναι:
+</p>
+```{r ex_2c_z_crit_1, echo = FALSE}
+ex_2c_z_crit_1 = round(qnorm(p = 0.975, mean = 0, sd = 1), 3)
+```
+$Z_{crit} = `r ex_2c_z_crit_1`$
+
+<p style="line-height: 1.8em;">
+Η περιοχή απόρριψης για $\alpha = 0.05$ δίνεται διαγραμματικά στο σχήμα $\scriptstyle{1\gamma_1}$:
+</p>
+
+```{r ex_1c_rejection_region_figure, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 1γ1: περιοχές απόρριψης της Z-κατανομής για α = 0.05 (δίπλευρος έλεγχος)", echo = FALSE}
+plot_rejection_region(alpha = 0.05, num_tails = "two.sided", dist = "Ζ")
+```
+
+<br/>
+
+<mark>Οι κρίσιμες τιμές είναι: $Z_{-\frac{\alpha}{2}} = -1.96$, $Z_{\frac{\alpha}{2}} = 1.96$. Επειδή $-1.96 \lt `r ex_2c_z_1` \lt 1.96$, δεν απορρίπτουμε την μηδενική $H_0$ υπόθεση, άρα δεν υπάρχει διαφορά στο ποσοστό των φοιτητών και φοιτητριών που είναι ικανοποιημένοι/ες από το πρόγραμμα σπουδών σε επίπεδο σημαντικότητας $\alpha = 0.05$.</mark>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+δ) Να κατασκευάσετε ένα $95\%$ διάστημα εμπιστοσύνης για τη διαφορά των μέσων βαθμών $\mu_1-\mu_2$ στον πληθυσμό, όπου $\mu_1$ είναι ο μέσος βαθμός των φοιτητών στο μαρκετινγκ και $\mu_2$ είναι ο μέσος βαθμός των φοιτητριών στο μαρκετινγκ.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Αναζητούμε την διαφορά μέσων $\mu_1$ και $\mu_2$ μεταξύ ανεξάρτητων δειγμάτων, χωρίς να μας δίνεται η διακύμανση. Επειδή οι διακυμάνσεις δύο πληθυσμών σπάνια θεωρούνται ίσες, θεωρούμε ότι είναι άνισες. Επομένως θα εκτιμήσουμε το διάστημα εμπιστοσύνης με τον τύπο:
+</p>
+
+$$(\overline{x_1} - \overline{x_2}) - t_{ν,\frac{1-\alpha}{2}} \cdot \sqrt{\frac{s_1^{2}}{n_1} + \frac{s_2^{2}}{n_2}} \lt \mu_1 - \mu_2 \lt (\overline{x_1} - \overline{x_2}) + t_{ν,\frac{1-\alpha}{2}} \cdot \sqrt{\frac{s_1^{2}}{n_1} + \frac{s_2^{2}}{n_2}} \text{ } (\scriptstyle{2\delta_1})$$
+
+με 
+
+$$ν = \frac{\left( \frac{s_1^{2}}{n_1} + \frac{s_2^{2}}{n_2} \right)^{2}} {\frac{s_1^{4}}{n_1^{2} \cdot (n_1 - 1)} + \frac{s_2^{4}}{n_2^{2} \cdot (n_2 - 1)}} (\scriptstyle{2\delta_2})$$
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε το πλήθος παρατηρήσεων $n_1$ και $n_2$:
+</p>
+```{r ex_2d_n_1, echo = FALSE}
+ex_2d_n_1 = length(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ])
+```
+$n_1 = `r ex_2d_n_1`$
+
+```{r ex_2d_n_2, echo = FALSE}
+ex_2d_n_2 = length(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ])
+```
+$n_2 = `r ex_2d_n_2`$
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε τους δειγματικούς μέσους $\overline{x_1}$ και $\overline{x_2}$:
+</p>
+```{r ex_2d_x_bar_1, echo = FALSE}
+ex_2d_x_bar_1 = round(mean(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$\overline{x_1} = `r ex_2d_x_bar_1`$
+
+```{r ex_2d_x_bar_2, echo = FALSE}
+ex_2d_x_bar_2 = round(mean(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$\overline{x_2} = `r ex_2d_x_bar_2`$
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε τις δειγματικές διακυμάνσεις $s_1^{2}$ και $s_2^{2}$:
+</p>
+```{r ex_1d_s1, echo = FALSE}
+ex_2d_s_1 = round(var(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"]), 3)
+```
+$s_1^{2} = `r ex_2d_s_1`$
+
+```{r ex_1d_s2, echo = FALSE}
+ex_2d_s_2 = round(var(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"]), 3)
+```
+$s_2^{2} = `r ex_2d_s_2`$
+
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε την ποσότητα $ν$ (βαθμοί ελευθερίας της t-κατανομής) από τον τύπο ($\scriptstyle{2\delta_2}$):
+</p>
+```{r ex_2d_t_df, echo = FALSE}
+ex_2d_t_df = round( ( (ex_2d_s_1 / ex_2d_n_1 ) + (ex_2d_s_2 / ex_2d_n_2 ) )^2 / ( ( ex_2d_s_1^2 / (ex_2d_n_1^2 * (ex_2d_n_1 - 1) ) ) + ( ex_2d_s_2^2 / (ex_2d_n_2^2 * (ex_2d_n_2 - 1) ) ) ), 0)
+```
+$ν = `r ex_2d_t_df`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κατανομής t για διάστημα εμπιστοσύνης $95\%$ είναι:
+</p>
+```{r ex_2d_t_crit_1, echo = FALSE}
+ex_2d_t_crit_1 = round(qt(p = 0.975, df = ex_2d_t_df), 3)
+```
+$t_{crit} = `r ex_2d_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Έχοντας όλα τα στοιχεία, εφαρμόζουμε τον τύπο ($\scriptstyle{2\delta_1})$:
+</p>
+```{r ex_2d_bounds_1, echo = FALSE}
+# Lower bound
+ex_2d_L_1 = round((ex_2d_x_bar_1 - ex_2d_x_bar_2) - ex_2d_t_crit_1 * ( sqrt( ( ex_2d_s_1 / ex_2d_n_1 ) + ( ex_2d_s_2 / ex_2d_n_2 ) ) ), 3)
+# Upper bound
+ex_2d_U_1 = round((ex_2d_x_bar_1 - ex_2d_x_bar_2) + ex_2d_t_crit_1 * ( sqrt( ( ex_2d_s_1 / ex_2d_n_1 ) + ( ex_2d_s_2 / ex_2d_n_2 ) ) ), 3)
+```
+<br/>
+$\text{lower bound} = `r ex_2d_L_1`$
+<br/>
+$\text{upper bound} = `r ex_2d_U_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως τo διάστημα εμπιστοσύνης για την διαφορά των μέσων βαθμών $\mu_1 - \mu_2$ στον πληθυσμό, όπου $\mu_1$ είναι ο μέσος βαθμός των φοιτητών στο μαρκετινγκ και $\mu_2$ είναι ο μέσος βαθμός των φοιτητριών στο μαρκετινγκ είναι $`r ex_2d_L_1` \lt \mu_1 - \mu_2 \lt `r ex_2d_U_1`$</mark>.
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+ε) Να εξετάσετε αν υπάρχει διαφορά στο μέσο βαθμό $\mu_1$ των φοιτητών στο μαρκετινγκ και στον μέσο βαθμό $\mu_2$ των φοιτητριών στο μαρκετινγκ [Να χρησιμοποιήσετε επίπεδο σημαντικότητας $\alpha=0.05$].
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>1ος τρόπος επίλυσης (περιοχές απόρριψης)</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Διατυπώνουμε τις εξής υποθέσεις:
+</p>
+
+$H_0: \mu_1 = \mu_2$ (δεν υπάρχει διαφορά μεταξύ των μέσων)
+<br/>
+$H_A: \mu_1 \neq \mu_2$ (υπάρχει διαφορά μεταξύ των μέσων)
+
+<p style="line-height: 1.8em;">
+Προκειμένου να επιλέξουμε την σωστή μέθοδο ελέγχου των υποθέσεων πρέπει να ελέγξουμε αν οι διακυμάνσεις μεταξύ των δύο μεταβλητών που εξετάζουμε ($\mu_1$ των φοιτητών στο μαρκετινγκ $\mu_2$ των φοιτητριών στο μαρκετινγκ). Ο έλεγχος υποθέσεων, ως προς την ισότητα των διακυμάνσεων, είναι ο εξής:
+</p>
+$H_0: \sigma_1^{2} = \sigma_2^{2}$
+<br/>
+$H_0: \sigma_1^{2} \neq \sigma_2^{2}$
+</p>
+
+<p style="line-height: 1.8em;">
+Επομένως, κάνουμε έλεγχο των διακυμάνσεων ως εξής:
+</p>
+
+```{r ex_2e_var_test_1, echo = FALSE}
+var.test(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ], ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ])
+```
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι $p-value = 0.5872$, επομένως δεν μπορούμε να απορρίψουμε την μηδενική υπόθεση, άρα θεωρούμε ότι οι διακυμάνσεις είναι ίσες.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Εφόσον θέλουμε να ελέγξουμε την διαφορά μεταξύ μέσων με άγνωστες ίσες διακυμάνσεις, η στατιστική ελέγχου που θα χρησιμοποιήσουμε είναι η εξής:
+</p>
+
+$$T = \frac{\overline{x}_1 - \overline{x}_1}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \scriptstyle{1\epsilon_1}$$
+<p style="line-height: 1.8em;">
+where:
+</p>
+$$s_p = \sqrt{\frac{(n_1-1) \cdot s_1^{2} + (n_2-1) \cdot s_2^{2}}{n_1+n_2-2}} \scriptstyle{1\epsilon_2}$$
+<br/>
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε τις ποσότητες:
+</p>
+```{r ex_2e_n_1, echo = FALSE}
+ex_2e_n_1 = length(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ])
+```
+$n_1 = `r ex_2e_n_1`$
+<br/>
+```{r ex_2e_n_2, echo = FALSE}
+ex_2e_n_2 = length(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ])
+```
+$n_2 = `r ex_2e_n_2`$
+<br/>
+$\overline{x}_1 = `r ex_2e_n_2`$
+<br/>
+```{r ex_2e_x_bar_1, echo = FALSE}
+ex_2e_x_bar_1 = round(mean(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$\overline{x}_1 = `r ex_2e_x_bar_1`$
+<br/>
+</p>
+```{r ex_2e_x_bar_2, echo = FALSE}
+ex_2e_x_bar_2 = round(mean(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$\overline{x}_2 = `r ex_2e_x_bar_2`$
+<br/>
+```{r ex_2e_s_1,  echo = FALSE}
+ex_2e_s_1 = round(var(ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$s_1^{2} = `r ex_2e_s_1`$
+<br/>
+```{r ex_2e_s_2,  echo = FALSE}
+ex_2e_s_2 = round(var(ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ]), 3)
+```
+$s_2^{2} = `r ex_2e_s_2`$
+<br/>
+```{r ex_2e_sp_1, echo = FALSE}
+ex_2e_sp_1 = round(sqrt( ( ( (ex_2e_n_1 - 1) * ex_2e_s_1) + ( (ex_2e_n_2 - 1) * ex_2e_s_2) ) / (ex_2e_n_1 + ex_2e_n_2 - 1) ), 3)
+```
+$s_p = `r ex_2e_sp_1`$
+
+<p style="line-height: 1.8em;">
+Η κρίσιμη τιμή της κατανομής t με $`r ex_2e_n_1 + ex_2e_n_2 - 1`$ βαθμούς ελευθερίας, για επίπεδο σημαντικότητας $\alpha = 0.05$, είναι:
+</p>
+```{r ex_2st_t_crit_1, echo = FALSE}
+ex_2st_t_crit_1 = round(qt(p = 0.975, df = (ex_2e_n_1 + ex_2e_n_2 - 1)), 3)
+```
+$t_{crit} = `r ex_2st_t_crit_1`$
+
+<p style="line-height: 1.8em;">
+Αντικαθιστώντας στον τύπο $\scriptstyle{1\epsilon_1}$ έχουμε:
+</p>
+```{r ex_2e_test_statistic_1, echo = FALSE}
+ex_2e_test_statistic_1 = round( (ex_2e_x_bar_1 - ex_2e_x_bar_2) / ex_2e_sp_1 * sqrt( (1 / ex_2e_n_1) + (1 / ex_2e_n_2 ) ), 3)
+```
+$T = `r ex_2e_test_statistic_1`$
+
+<p style="line-height: 1.8em;">
+Η περιοχή απόρριψης για $\alpha = 0.05$ δίνεται διαγραμματικά στο σχήμα $\scriptstyle{2\epsilon_1}$:
+</p>
+
+```{r ex_2e_rejection_region_figure, fig.width = 8, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 2ε1: περιοχές απόρριψης της t-κατανομής για α = 0.05 (δίπλευρος έλεγχος)", echo = FALSE}
+plot_rejection_region(alpha = 0.05, num_tails = "two.sided", dist = "t", tdof = (ex_2e_n_1 + ex_2e_n_2 - 1))
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Επομένως, αφού $`r -ex_2st_t_crit_1` \lt T \lt `r ex_2st_t_crit_1`$
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>2ος τρόπος επίλυσης (t-test)</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Πραγματοποιούμε t-test, με δεδομένο ότι έχουμε ίσες δειγματικές διακυμάνσεις, ως εξής:
+</p>
+```{r ex_2e_paired_t_test, echo = FALSE}
+ex_2e_t_test_1 = t.test(x = ex_2.data[ex_2.data["Φύλο"] == 1, ]["Εισαγωγή στο Μάρκετινγκ"][, ], ex_2.data[ex_2.data["Φύλο"] == 2, ]["Εισαγωγή στο Μάρκετινγκ"][, ], data = ex_2.data, paired = FALSE, var.equal = TRUE, conf.level = 0.95)
+
+print(ex_2e_t_test_1)
+
+ex_2e_p_value_1 = ex_2e_t_test_1["p.value"]
+```
+
+<p style="line-height: 1.8em;">
+<mark>Με $p-value = `r ex_2e_p_value_1`$, καταλήγουμε στο συμπέρασμα ότι η πιθανότητα να παρατηρήσουμε τα δεδομένα μας κάτω από την μηδενική υπόθεση είναι αρκετά υψηλή για επίπεδο σημαντικότητας $\alpha = 0.05$. Επομένως, δεν απορρίπτουμε την μηδενική υπόθεση προς όφελος της εναλλακτικής και καταλήγουμε στο συμπέρασμα ότι, σύμφωνα με τα δεδομένα μας, δεν υπάρχει στατιστικά σημαντική διαφορά μεταξύ των μέσων $\mu_1$ και $\mu_2$ των βαθμών των φοιτητών και φοιτητριών, αντίστοιχα, στο μάρκετινγκ.</mark>
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+στ) Την προηγούμενη εξεταστική περίοδο το ποσοστό των φοιτητών/τριών που έγραψαν άριστα στη λογιστική ήταν $9.5\%$. Νομίζετε ότι κατά το τρέχον έτος το ποσοστό αυτό αυξήθηκε; [Να χρησιμοποιήσετε επίπεδο σημαντικότητας $\alpha=0.05$].
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Διατυπώνουμε τις παρακάτω υποθέσεις:
+</p>
+$H_0: \pi_{\text{προηγούμενη εξεταστική}} = \pi_{\text{τρέχουσα εξεταστική}}$
+<br/>
+$H_A: \pi_{\text{προηγούμενη εξεταστική}} < \pi_{\text{τρέχουσα εξεταστική}}$
+<br/>
+
+Ο εκτιμητής $p_{\text{προηγούμενη εξεταστική}} = 0.095$ είναι γνωστός (δίνεται από την εκφώνηση). Ας βρούμε τον εκτιμητή $p_{\text{τρέχουσα εξεταστική}}$ του ποσοστού των εξεταζόμενων που έγραψαν άριστα στην τρέχουσα εξεταστική:
+
+```{r ex_2st_proportions, echo = FALSE}
+ex_2st_p_previous = 0.095
+ex_2st_p_current = round(((length(which((ex_2.data["Λογιστική"] >= 85))) * 100) / ex_2_n_1) / 100, 3)
+```
+$p_{\text{τρέχουσα εξεταστική}} = `r ex_2st_p_current`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Θέλουμε να πραγματοποιήσουμε τον έλεγχο υποθέσεων επί της διαφοράς των δύο πληθυσμών. Επομένως, θα χρησιμοποιήσουμε την παρακάτω στατιστική ελέγχου:
+</p>
+$$Z = \frac{\pi_{\text{προηγούμενη εξεταστική}} - \pi_{\text{τρέχουσα εξεταστική}}}{\sqrt{\frac{\pi_{\text{προηγούμενη εξεταστική}} \cdot (1 - \pi_{\text{προηγούμενη εξεταστική}}) }{n} + \frac{\pi_{\text{τρέχουσα εξεταστική}} \cdot (1 - \pi_{\text{τρέχουσα εξεταστική}})}{n}}}$$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε την τιμή της στατιστικής ελέγχου:
+</p>
+```{r ex_2st_z_1, echo = FALSE}
+ex_2st_z_1 = round( ( (ex_2st_p_previous - ex_2st_p_current) / sqrt( ( ( (ex_2st_p_previous * (1 - ex_2st_p_previous) ) /  ex_2_n_1) + ( (ex_2st_p_current * (1 - ex_2st_p_current) ) /  ex_2_n_1) ) ) ), 3)
+```
+$Z = `r ex_2st_z_1`$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Υπολογίζουμε, επίσης, την κρίσιμη τιμή της στατιστικής ελέγχου για δίπλευρο έλεγχο και επίπεδο σημαντικότητας $\alpha = 0.05$ :
+</p>
+```{r ex_2st_z_crit_1, echo = FALSE}
+ex_2st_z_crit_1 = round(qnorm(p = 1 - (0.05 / 2), mean = 0, sd = 1), 3)
+```
+$Z_{crit} = `r ex_2st_z_crit_1`$
+
+<p style="line-height: 1.8em;">
+Η περιοχές απόρριψης για $\alpha = 0.05$ δίνονται διαγραμματικά στο σχήμα $\scriptstyle{2\sigma\tau_1}$:
+</p>
+
+<br/>
+
+```{r ex_2st_rejection_region_figure, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 1στ1: περιοχές απόρριψης της Ζ-κατανομής για α = 0.05 (δίπλευρος έλεγχος)", echo = FALSE}
+plot_rejection_region(alpha = 0.05, num_tails = "two.sided", dist = "Z")
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Οι κρίσιμες τιμές είναι: $Z_{-\frac{\alpha}{2}} = -1.96$, $Z_{\frac{\alpha}{2}} = 1.96$. Επειδή $-1.96 \lt `r ex_2st_z_1` \lt 1.96$, δεν απορρίπτουμε την μηδενική $H_0$ υπόθεση, άρα δεν υπάρχει διαφορά στο ποσοστό των φοιτητών και φοιτητριών που έγραψαν άριστα στην λογιστική την προηγούμεν χρονιά σε σχέση με την τρέχουσα, για επίπεδο σημαντικότητας $\alpha = 0.05$.</mark>
+</p>
+
+<br/>
+<br/>
+
+<p style="line-height: 1.8em;">
+ζ) Να απαντήσετε τα παραπάνω ερωτήματα με τη χρήση του R. Να δώσετε τον κώδικα R, που γράψατε προκειμένου να απαντήσετε στα ερωτήματα (α)-(στ).
+</p>
+
+***
+
+### Άσκηση 3
+
+<p style="line-height: 1.8em;">
+Η παρουσία βλαβερών εντόμων στις καλλιέργειες είναι γνωστό ότι προκαλεί συχνά σημαντικές ζημιές στις σοδειές. Μια από τις λύσεις που έχουν προταθεί για την αντιμετώπιση αυτού του προβλήματος είναι η χρησιμοποίηση υλικών τα οποία έχουν στην επιφάνειά τους ειδική κολλώδη ουσία και έχουν την ιδιότητα να παγιδεύουν τα έντομα. Βοτανολόγος ενδιαφέρεται να εξετάσει αν το χρώμα που έχει η κολλώδης επιφάνεια ενδέχεται να επηρεάζει τον αριθμό των εντόμων που κολλάνε σε αυτήν, έτσι ώστε να εντοπίσει ποιο χρώμα οδηγεί στην αποτελεσματικότερη αντιμετώπιση του προβλήματος. Για το λόγο αυτό ετοίμασε 18 κολλώδεις επιφάνειες ιδίων διαστάσεων οι οποίες διέφεραν μόνο ως προς το χρώμα τους: υπήρχαν 6 πράσινες, 6 κόκκινες και 6 μπλέ. Στη συνέχεια επέλεξε μια καλλιεργήσιμη έκταση μεγάλου μεγέθους και σε 18 τυχαία επιλεγμένα σημεία αυτής τοποθέτησε τις 18 επιφάνειες. Η επιφάνεια που τοποθετήθηκε σε κάθε σημείο επιλέχθηκε τυχαία. 24 ώρες μετά, έγινε καταγραφή των εντόμων που παγιδεύτηκαν σε κάθε επιφάνεια. Τα αποτελέσματα παρουσιάζονται στον παρακάτω πίνακα:
+</p>
+
+<br/>
+
+```{r ex_3_data_table, echo = FALSE}
+# Create a vector for each column
+insect_count_on_red = c(59, 48, 38, 46, 52, 55)
+insect_count_on_green = c(24, 42, 43, 34, 44, 31)
+insect_count_on_blue = c(35, 29, 33, 38, 41, 29)
+
+# Create a data frame from columns
+ex_3.data = data.frame(insect_count_on_red, insect_count_on_green, insect_count_on_blue)
+
+# Change column labels
+colnames(ex_3.data) = c("ΚΟΚΚΙΝΟ", "ΠΡΑΣΙΝΟ", "ΜΠΛΕ")
+
+# Render the table
+ex_3.data %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F) %>% add_header_above(c("ΧΡΩΜΑ ΕΠΙΦΑΝΕΙΑΣ" = 3))
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Να διεξάγετε κατάλληλο έλεγχο υποθέσεων προκειμένου να εξετάσετε αν υπάρχει διαφορά του μέσου αριθμού εντόμων που παγιδεύτηκαν στις επιφάνειες πράσινου, κόκκινου και μπλέ χρώματος. Να χρησιμοποιήσετε επίπεδο σημαντικότητας $\alpha=0.05$. Σε ποιο συμπέρασμα καταλήγετε; Να απαντήσετε τα ερωτήματα με τη χρήση του R και να δώσετε τον κώδικα R που γράψατε.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Έχουμε περίπτωση ανάλυσης διακύμανσης κατά ένα παράγοντα, το χρώμα της παγίδας.
+</p>
+
+<p style="line-height: 1.8em;">
+Η πρώτη μας ενέργεια είναι ο μετασχηματισμός του αρχικού data.frame σε ένα data.frame που να περιέχει όλες τις παρατηρήσεις στην στήλη "Πλήθος Εντόμων" και το αντίστοιχο χρώμα, στην στήλη "Χρώμα". Η στήλη "Χρώμα" θα πρέπει να οριστεί ως κατηγορική μεταβλητή (factor): 
+</p>
+
+```{r ex_3_source_df_to_aov_df, echo = FALSE}
+# Create a AOV-ready data frame from the data set
+ex_3.data.aov = stack(ex_3.data)
+
+# Change column labels
+colnames(ex_3.data.aov) = c("Πλήθος Εντόμων", "Χρώμα")
+
+# Convert variable "Χρώμα" to factor
+ex_3.data.aov[["Χρώμα"]] = factor(ex_3.data.aov[["Χρώμα"]])
+```
+
+<p style="line-height: 1.8em;">
+Το μετασχηματισμένο data.frame είναι το εξής:
+</p>
+
+```{r ex_3_aov_df, echo = FALSE}
+# Render the table
+ex_3.data.aov %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F) %>% add_header_above(c("Μετασχηματισμένο data.frame για ANOVA" = 2))
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Αναφέρουμεε ότι η διατύπωση των υποθέσεών μας είναι η παρακάτω:
+</p>
+
+$H_0: \mu_1 = \mu_2 = \mu_3$ (οι μέσοι του πληθυσμού των εντόμων είναι ίσοι)
+<br/>
+$H_A: \mu_1 \neq \mu_2 \neq \mu_3$ (οι μέσοι του πληθυσμού των εντόμων είναι άνισοι)
+<br/>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ξεκινάμε κατασκευάζοντας διαγραμμα boxplot (σχήμα 3α), όπου φαίνεται να υπάρχει διαφορά στο πλήθος εντόμων ανάλογα με το χρώμα της παγίδας που χρησιμοποιείται:
+</p>
+
+<br/>
+
+```{r ex_3_boxplot_1, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 3α: Πλήθος εντόμων ανά χρώμα", echo = FALSE}
+# Boxplot of insect counts by trap color
+boxplot(ex_3.data.aov[["Πλήθος Εντόμων"]] ~ ex_3.data.aov[["Χρώμα"]], main = "Πλήθος εντόμων ανά χρώμα", xlab = "Χρώμα", ylab = "Πληθος εντόμων", names = c("ΚΟΚΚΙΝΟ", "ΠΡΑΣΙΝΟ", "ΜΠΛΕ"))
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Εκτελούμε ANOVA στα δεδομένα μας και λαμβάνουμε τα εξής αποτελέσματα:
+</p>
+
+```{r ex_3_fit_aov_1, echo = FALSE}
+ex_3_fit_aov_1 = aov(ex_3.data.aov[["Πλήθος Εντόμων"]] ~ ex_3.data.aov[["Χρώμα"]], data = ex_3.data.aov)
+summary(ex_3_fit_aov_1)
+```
+
+<p style="line-height: 1.8em;">
+Εξετάζουμε αν ισχύουν οι υποθέσεις των καταλοίπων:
+</p>
+
+<p style="line-height: 1.8em;">
+α) Εξεταζουμε αν ισχύει η κανονικότητα:
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+i) Mε οπτικό έλεγχο κανονικότητας (Normal QQ plot):
+</p>
+
+```{r ex_3_norm_qqplot_1, fig.width = 7, fig.height = 4, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 3α: Normal QQ plot των καταλοίπων ANOVA", echo = FALSE}
+# Test the normality assumption in the residuals
+qqnorm(ex_3_fit_aov_1[["residuals"]], main = "Normal QQ plot των καταλοίπων ANOVA")
+qqline(ex_3_fit_aov_1[["residuals"]], col = "red", lty = 1, lwd = 2)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ο οπτικός έλεγχος μας οδηγεί στο συμπέρασμα ότι τα κατάλοιπα **δεν είναι κανονικά κατανεμημένα**. Προχωρούμε σε εκτενέστερο έλεγχο παρακάτω.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+ii) Εκτελούμε έλεγχο Shapiro-Willks:
+</p>
+```{r ex_3_norm_sw_1, echo = FALSE}
+shapiro.test(ex_3_fit_aov_1[["residuals"]])
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι ισχύει η μηδενική υπόθεση της κανονικότητας των καταλοίπων αφού το p-value του ελέγχου είναι μεγαλύτερο του επιπέδου σημαντικότητας $\alpha = 0.05$.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+iii) Εκτελούμε έλεγχο κανονικότητας Lilliefors (Kolmogorov-Smirnov):
+</p>
+```{r ex_3_norm_lks_1, echo = FALSE}
+lillie.test(ex_3_fit_aov_1[["residuals"]])
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι ισχύει η μηδενική υπόθεση της κανονικότητας των καταλοίπων αφού το p-value του ελέγχου είναι μεγαλύτερο του επιπέδου σημαντικότητας $\alpha = 0.05$.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Εν κατακλείδι, θεωρούμε ότι τα κατάλοιπα είναι **κανονικά κατανεμημένα**.</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+β) Ελέγχουμε την υπόθεση ομοσκεδαστικότητας:
+</p>
+
+<p style="line-height: 1.8em;">
+i) Με έλεγχο Bartlett:
+</p>
+
+<br/>
+
+```{r ex_3_homoscedascity_bartlet, echo = FALSE}
+# Test the assumption of homogeneity of variances
+ex_3_bartlett_test = bartlett.test(ex_3.data.aov[["Πλήθος Εντόμων"]] ~ ex_3.data.aov[["Χρώμα"]], data = ex_3.data.aov)
+ex_3_bartlett_test
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι ισχύει η μηδενική υπόθεση της ομοσκεδαστικότητας των καταλοίπων αφού η τιμή **p-value του ελέγχου Bartlett (`r ex_3_bartlett_test["p.value"]`) είναι μεγαλύτερη του επιπέδου σημαντικότητας $\alpha = 0.05$**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+i) Με έλεγχο Fligner:
+</p>
+
+<br/>
+
+```{r ex_3_homoscedascity_fligner, echo = FALSE}
+ex_3_fligner_test = fligner.test(ex_3.data.aov[["Πλήθος Εντόμων"]] ~ ex_3.data.aov[["Χρώμα"]])
+ex_3_fligner_test
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι ισχύει η μηδενική υπόθεση της ομοσκεδαστικότητας των καταλοίπων αφού η τιμή **p-value του ελέγχου Fligner (`r ex_3_fligner_test["p.value"]`) είναι μεγαλύτερη του επιπέδου σημαντικότητας $\alpha = 0.05$**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Εν κατακλείδι, θεωρούμε ότι τα κατάλοιπα είναι **ομοσκεδαστικά**.</mark>
+</p>
+
+<br/>
+
+```{r ex_3_diagnostic_plots_1, fig.width = 9, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 3β: Διαγνωστικά διαγράμματα ANOVA", echo = FALSE}
+# Diagnostic plots
+layout(matrix(1:4, 2, 2))
+plot(ex_3_fit_aov_1)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Στη συνέχεια θα εξετασουμε ποιοι μέσοι διαφέρουν. Πρώτα, ας δούμε ένα διάγραμμα μέσων:
+</p>
+
+<br/>
+
+```{r ex_3_mean_plot_1, fig.width = 8, fig.height = 5, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 3δ: Διάγραμμα μέσων με 95% διάστημα εμπιστοσύνης", echo = FALSE}
+plotmeans(ex_3.data.aov[["Πλήθος Εντόμων"]] ~ ex_3.data.aov[["Χρώμα"]], xlab = "Χρώμα", ylab = "Πλήθος εντόμων", main = "Διάγραμμα μέσων με 95% διάστημα εμπιστοσύνης")
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Εφαρμόζουμε πολλαπλούς ελέγχους (multiple comparison tests):
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+i) Μέθοδος Tukey HSD
+</p>
+
+<br/>
+
+```{r ex_3_tukey, echo = FALSE}
+ex_3_tukey = TukeyHSD(ex_3_fit_aov_1)
+ex_3_tukey
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι υπάρχει διαφορά στους μέσους των κατηγοριών **ΜΠΛΕ-ΚΟΚΚΙΝΟ**, αφού η τιμή **adjusted p-value της συγκεκριμένης σύγκρισης είναι χαμηλότερη από το επίπεδο σημαντικότητας $\alpha = 0.05$**, άρα απορρίπτουμε την μηδενική υπόθεση ισότητας των μέσων του συγκεκριμένου ζεύγους.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+ii) Μέθοδος Pairwise t-test:
+</p>
+
+<br/>
+
+```{r ex_3_pairwise_t_test, echo = FALSE}
+ex_3_pairwise_t_test_1 = pairwise.t.test(ex_3.data.aov[["Πλήθος Εντόμων"]], ex_3.data.aov[["Χρώμα"]], p.adjust.method = "bonferroni")
+ex_3_pairwise_t_test_1
+
+ex_3_pairwise_t_test_2 = pairwise.t.test(ex_3.data.aov[["Πλήθος Εντόμων"]], ex_3.data.aov[["Χρώμα"]], p.adjust.method = "holm")
+ex_3_pairwise_t_test_2
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι διαφέρουν οι μέσοι των ζευγών χρωμάτων **ΚΟΚΚΙΝΟ-ΠΡΑΣΙΝΟ** και **ΚΟΚΚΙΝΟ-ΜΠΛΕ**, αφού η τιμή **p-value των ανά ζεύγη συγκρίσεών τους είναι χαμηλότερο από το επίπεδο σημαντικότητας $\alpha = 0.05$**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+iii) Μέθοδος Least Significant Differences
+</p>
+
+<br/>
+
+```{r ex_3_lsd_test_1, echo = FALSE}
+DFE = ex_3_fit_aov_1[["df.residual"]]
+MSE = deviance(ex_3_fit_aov_1) / DFE
+
+ex_3_lsd_test_1 = LSD.test(ex_3.data.aov[["Πλήθος Εντόμων"]], ex_3.data.aov[["Χρώμα"]], DFerror = DFE, MSerror = MSE, p.adj = "bonferroni")
+ex_3_lsd_test_1
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+iv) Μέθοδος Scheffe
+</p>
+
+<br/>
+
+```{r ex_3_scheffe_test_1, echo = FALSE}
+DFE = ex_3_fit_aov_1[["df.residual"]]
+MSE = deviance(ex_3_fit_aov_1) / DFE
+
+ex_3_scheffe_test_1 = scheffe.test(ex_3.data.aov[["Πλήθος Εντόμων"]], ex_3.data.aov[["Χρώμα"]], DFerror = DFE, MSerror = MSE)
+ex_3_scheffe_test_1
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Οι δύο ανωτέρω έλεγχοι δείχνουν ότι τα χρώματα **ΠΡΑΣΙΝΟ** και **ΜΠΛΕ** ανήκουν στην ίδια όμάδα, ενώ το **ΚΟΚΚΙΝΟ** χρώμα διαφέρει ως προς την τιμή του μέσου από τα λοιπά χρώματα.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>
+Το τελικό αποτέλεσμα της ανάλυσής μας είναι ότι το πλήθος εντόμων που αιχμαλωτίστηκαν στα χρώματα **ΠΡΑΣΙΝΟ και ΜΠΛΕ δεν είναι στατιστικά διαφορετικό**. Το πλήθος των εντόμων, όμως, που αιχμαλωτίστηκαν στο χρώμα **ΚΟΚΚΙΝΟ διαφέρει σημαντικά**, έχοντας το μεγαλύτερο μέσο πλήθος εντόμων από τα λοιπά χρώματα.
+</mark>
+</p>
+
+<br/>
+<br/>
+
+***
+
+### Άσκηση 4
+
+<p style="line-height: 1.8em;">
+Ερευνητής ενδιαφέρεται να εξετάσει την σχέση μεταξύ των απαιτούμενων ωρών ύπνου (Υ) και της ηλικίας των παιδιών (Χ). Για τον σκοπό αυτό επέλεξε μια ομάδα αποτελούμενη από 13 παιδιά ηλικίας από 4 μέχρι και 14 ετών. Στη συνέχεια κατέγραψε την ακριβή ηλικία τους (σε έτη), καθώς και την μέση χρονική διάρκεια ύπνου σε λεπτά/24ωρο. Ο μέσος χρόνος ύπνου υπολογίστηκε καταγράφοντας για κάθε παιδί τον χρόνο ύπνου για τέσσερις διαδοχικές νύχτες και στην συνέχεια υπολογίζοντας τον μέσο όρο των τεσσάρων αυτών τιμών. Τα αποτελέσματα του πειράματος παρουσιάζονται στον πίνακα που ακολουθεί:
+</p>
+
+<br/>
+
+```{r ex_4_data_table, echo = FALSE}
+# Create a vector for each column
+age = c(4.40, 14.00, 10.10, 6.70, 11.50, 9.60, 12.40, 8.90, 11.10, 7.75, 5.50, 8.60, 7.20)
+avg_sleep_time_min_24_hours = c(586.0, 461.75, 491.10, 565.0, 462.0, 530.10, 477.60, 515.20, 493.00, 528.30, 575.90, 532.50, 530.50)
+
+# Create a data frame from columns
+ex_4.data = data.frame(age, avg_sleep_time_min_24_hours)
+
+# Change column labels
+colnames(ex_4.data) = c("Ηλικία", "Μέσος χρόνος ύπνου σε λεπτά/24ωρο")
+
+# Render the table
+ex_4.data %>% kable() %>% kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Με βάση τα αποτελέσματα του παραπάνω πειράματος να εκτιμήσετε κατάλληλο υπόδειγμα για την χρονική διάρκεια ύπνου και να παρουσιάσετε τα συμπεράσματα που προκύπτουν. Να απαντήσετε τα ερωτήματα με τη χρήση του R και να δώσετε τον κώδικα R που γράψατε.
+</p>
+
+<br/>
+
+#### Απάντηση
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Εξετάζουμε με plot την σχέση που ενδεχομένως υπάρχει μεταξύ ηλικίας και μέσου χρόνου ύπνου:
+</p>
+
+<br/>
+
+```{r ex_4_exploratory_plot_1, fig.width = 6, fig.height = 5, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 4α: Ηλικία vs Μέσος χρόνος ύπνου (σε λεπτά) / 24ωρο", echo = FALSE}
+plot(age, avg_sleep_time_min_24_hours, main="Ηλικία vs Μέσος χρόνος ύπνου (σε λεπτά) / 24ωρο", xlab = "Ηλικία", ylab = "Λεπτά ύπνου")
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε διαισθητικά ότι φαίνεται να υπάρχει αρνητική γραμμική συσχέτιση μεταξύ των μεταβλητών **age** και **avg_sleep_time_min_24_hours**, την οποία θα ελέγξουμε.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Εξετάζουμε τον συντελεστή συσχέτισης του Pearson των μεταβλητών **age** και **avg_sleep_time_min_24_hours** με ταυτόχρονο έλεγχο της υπόθεσης συσχέτισης των μεταβλητών σε επίπεδο σημαντικότητας $\alpha = 0.05$:
+</p>
+
+<br/>
+
+```{r ex_3_correlation_test_1, echo = FALSE}
+ex_3_correlation_test_1 = cor.test(age, avg_sleep_time_min_24_hours, alternative = c("two.sided"), method = c("pearson"), conf.level = 0.95)
+ex_3_correlation_test_1
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι ο έλεγχος μας δίνει $\text{p-value} = `r ex_3_correlation_test_1["p.value"]`$, επομένως **απορρίπτουμε την μηδενική υπόθεση** ότι οι δύο μεταβλητές δεν είναι συσχετισμένες προς όφελος της εναλλακτικής υπόθεσης ότι πράγματι είναι, με τιμή συσχέτισης `r ex_3_correlation_test_1["estimate"]` (**σημαντική αρνητική συσχέτιση**) και για επίπεδο σημαντικότητας $\alpha = 0.05$.
+</p>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι φαίνεται να υπάρχει γραμμική σχέση μεταξύ των μεταβλητών τέτοια που να μπορεί να προσεγγιστεί από μοντέλο της μορφής $y = \alpha + \beta_1x_1 + \epsilon$.
+</p>
+
+<br/>
+
+```{r ex_4_lm_fit_1, echo = FALSE}
+ex_4_lm_fit_1 = lm(avg_sleep_time_min_24_hours ~ age)
+summary(ex_4_lm_fit_1)
+```
+
+<br/>
+
+```{r ex_4_lm_plot_1, fig.width = 8, fig.height = 6, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 4β: Ηλικία vs μέσος χρόνος ύπνου (σε λεπτά) / 24ωρο με γραμμή OLS", echo = FALSE}
+plot(age, avg_sleep_time_min_24_hours, main = "Ηλικία vs μέσος χρόνος ύπνου (σε λεπτά) / 24ωρο με γραμμή OLS", xlab = "Ηλικία", ylab = "Λεπτά ύπνου")
+abline(ex_4_lm_fit_1, col = "red")
+```
+
+<br/>
+
+```{r ex_4_lm_anova_1, echo = FALSE}
+ex_4_lm_anova_1 = anova(ex_4_lm_fit_1)
+ex_4_lm_anova_1
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Από τα παρακάτω αποτελέσματα βλέπουμε ότι το απλό γραμμικό μοντέλο περιγράφει ικανοποιητικά την σχέση ανάμεσα στις δύο μεταβλητές, καθώς η τιμή του συντελεστή προσδιορισμού είναι μεγάλη, και η κλίση της ευθείας είναι στατιστικά σημαντική. Το υπόδειγμα της παλινδρόμησης που εκτιμήθηκε είναι:
+</p>
+
+<br/>
+
+$$\text{Λεπτά ύπνου} = 646.44 - 14.05 \cdot \text{Ηλικία}$$
+
+<br/>
+
+<p style="line-height: 1.8em;">
+<mark>Επομένως, για κάθε μοναδιαία μεταβολή της ηλικίας, ο εκτιμώμενος μέσος χρόνος ύπνου **μειώνεται** κατά 14.05 λεπτά</mark>
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Πρέπει να εξετάσουμε αν ικανοποιούνται όλες οι υποθέσεις του μοντέλου (κανονικότητα, ομοσκεδαστικότητα
+και τυχαιότητα των καταλοίπων) με χρήση των παρακάτω:
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+i) Διάγραμμα καταλοίπων και τυποποιημένων καταλοίπων για τις προβλεπόμενες τιμές της εξαρτημένης μεταβλητής:
+</p>
+
+```{r ex_4_lm_diagnostic_plots_1, fig.width = 9, fig.height = 8, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 4γ: Διαγνωστικά διαγράμματα γραμμικού μοντέλου", echo = FALSE}
+# Diagnostic plots
+layout(matrix(1:4, 2, 2))
+plot(ex_4_lm_fit_1)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε ότι το διάγραμμα Residuals vs Fitted δεν εμφανίζει την τυχαιότητα διασποράς γύρω από την baseline γραμμή ($y = 0$) που θα αναμέναμε από ένα αξιόπιστο μοντέλο. Επίσης, το διάγραμμα Scale-Location, το οποίο δείχνει αν τα κατάλοιπα είναι ίσα κατανεμημένα ως προς τις ανεξάρτητες μεταβλητές και ελέγχει την υπόθεση ομοσκεδαστικότητας, παρουσιάζει διαφορά σε σχέση με την σχετικά οριζόντια γραμμή με τυχαία εκατέρωθεν διάσπαρτα σημεία, χωρίς να είμαστε σε θέση να εντοπίσουμε κάποιο πρότυπο (pattern), που θα επιθυμούσαμε να δούμε από ένα αξιόπιστο μοντέλο.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+ii) Έλεγχος κανονικότητας των καταλοίπων με normal QQ plot και έλεγχο Shapiro-Wilk:
+</p>
+
+<br/>
+
+```{r ex_4_lm_residuals_norm_qq_plot_1, fig.width = 8, fig.height = 6, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 4δ: Normal QQ plot καταλοίπων γραμμικού μοντέλου", echo = FALSE}
+qqnorm(ex_4_lm_fit_1[["residuals"]], main = "Σχήμα 4δ: Normal QQ plot καταλοίπων γραμμικού μοντέλου")
+qqline(ex_4_lm_fit_1[["residuals"]], col = "red", lty = 1, lwd = 2)
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε οπτικά ότι **τα κατάλοιπα φαίνονται κανονικά κατανεμημένα**, προχωρούμε σε έλεγχο Shapiro-Wilk:
+</p>
+
+<br/>
+
+```{r ex_4_lm_residuals_norm_test_1, echo = FALSE}
+ex_4_lm_residuals_norm_test_1 = shapiro.test(ex_4_lm_fit_1[["residuals"]])
+ex_4_lm_residuals_norm_test_1
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Ο έλεγχος κανονικότητας Shapiro-Wilk μας δείχνει ότι **τα κατάλοιπα του γραμμικού μοντέλου είναι κανονικά κατανεμημένα** με $p-value = `r ex_4_lm_residuals_norm_test_1["p.value"]`$.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+iii) Διάγραμμα τυχαιότητας των καταλοίπων:
+</p>
+
+<br/>
+
+```{r ex_4_lm_residuals_randomness_plot_1, fig.width = 8, fig.height = 6, fig.align = "center", fig.cap = "\\label{fig:figs}Σχήμα 4ε: fitted vs κατάλοιπα γραμμικού μοντέλου", echo = FALSE}
+plot(ex_4_lm_fit_1[["fitted.values"]], ex_4_lm_fit_1[["residuals"]])
+```
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Παρατηρούμε τυχαία διασπορά των fitted τιμών και των καταλοίπων του γραμμικού μοντέλου, επομένως **ο έλεγχος τυχαιότητας των καταλοίπων ικανοποιείται**.
+</p>
+
+<br/>
+
+<p style="line-height: 1.8em;">
+Συμπερασματικά, **ικανοποιούνται όλες οι υποθέσεις του μοντέλου** (κανονικότητα, ομοσκεδαστικότητα και
+τυχαιότητα των καταλοίπων), άρα δεν έχουμε ενδείξεις ότι το γραμμικό υπόδειγμα δεν είναι αξιόπιστο.
+</p>

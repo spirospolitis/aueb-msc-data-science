@@ -1,0 +1,1 @@
+Matrix A, followed by B, followed by G. Each matrix is of size 256x256. The entries are given in row order, 4 per line, e format.

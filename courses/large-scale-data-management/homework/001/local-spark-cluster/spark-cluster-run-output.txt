@@ -1,0 +1,60 @@
+WARNING: The http_proxy variable is not set. Defaulting to a blank string.
+WARNING: The https_proxy variable is not set. Defaulting to a blank string.
+Starting jupyter-notebook ...
+Starting jupyter-spark-master ...
+Starting jupyter-spark-slave-2 ...
+Starting jupyter-spark-master
+Starting jupyter-notebook
+Starting jupyter-spark-slave-1 ...
+Starting jupyter-spark-slave-2
+Starting jupyter-spark-master ... done
+Attaching to jupyter-notebook, jupyter-spark-slave-2, jupyter-spark-slave-1, jupyter-spark-master
+jupyter-notebook    | /opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+jupyter-notebook    | /opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+jupyter-notebook    | /opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+jupyter-spark-master | /opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+jupyter-notebook    | /opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+jupyter-spark-master | /opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+jupyter-notebook    | /opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+jupyter-spark-master | /opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+jupyter-notebook    | /opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+jupyter-spark-slave-2 | /opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+jupyter-spark-master | /opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+jupyter-spark-slave-2 | /opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+jupyter-notebook    | /opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+jupyter-spark-master | /opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+jupyter-spark-master | /opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+jupyter-spark-slave-1 | /opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+jupyter-notebook    | /opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+jupyter-spark-slave-2 | /opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+jupyter-spark-slave-1 | /opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+jupyter-spark-master | /opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+jupyter-spark-slave-2 | rsync from local[*]
+jupyter-spark-slave-2 | /opt/spark/sbin/spark-daemon.sh: line 170: rsync: command not found
+jupyter-spark-slave-2 | starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-spark-slave-2.out
+jupyter-spark-slave-1 | /opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+jupyter-spark-master | /opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+jupyter-spark-slave-1 | rsync from local[*]
+jupyter-spark-slave-1 | /opt/spark/sbin/spark-daemon.sh: line 170: rsync: command not found
+jupyter-spark-slave-1 | starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-spark-slave-1.out
+jupyter-spark-master | rsync from local[*]
+jupyter-spark-master | /opt/spark/sbin/spark-daemon.sh: line 170: rsync: command not found
+jupyter-spark-master | starting org.apache.spark.deploy.master.Master, logging to /opt/spark/logs/spark--org.apache.spark.deploy.master.Master-1-spark-master.out
+jupyter-notebook    | [W 07:11:29.027 NotebookApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+jupyter-notebook    | [I 07:11:29.087 NotebookApp] JupyterLab beta preview extension loaded from /opt/anaconda3/lib/python3.6/site-packages/jupyterlab
+jupyter-notebook    | [I 07:11:29.087 NotebookApp] JupyterLab application directory is /opt/anaconda3/share/jupyter/lab
+jupyter-notebook    | [I 07:11:29.097 NotebookApp] Serving notebooks from local directory: /mnt/notebooks
+jupyter-notebook    | [I 07:11:29.097 NotebookApp] 0 active kernels
+jupyter-notebook    | [I 07:11:29.097 NotebookApp] The Jupyter Notebook is running at:
+jupyter-notebook    | [I 07:11:29.097 NotebookApp] http://jupyter-notebook:8888/
+jupyter-notebook    | [I 07:11:29.097 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).

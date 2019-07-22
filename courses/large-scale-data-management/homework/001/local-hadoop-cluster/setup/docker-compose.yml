@@ -1,0 +1,78 @@
+version: "3.5"
+
+services:
+
+  yarnmaster:
+    hostname: yarnmaster
+    container_name: yarnmaster
+    image: swapnillinux/cloudera-hadoop-yarnmaster:latest
+    volumes:
+      - hadoop-yarnmaster-volume:/root/
+    networks:
+      - hadoop-network
+    expose:
+      - 8032
+      - 8088
+    ports:
+      - 8032:8032
+      - 8088:8088
+
+  namenode:
+    hostname: namenode
+    container_name: namenode
+    image: swapnillinux/cloudera-hadoop-namenode
+    volumes:
+      - hadoop-namenode-volume:/root/
+      - type: bind
+        source: ./
+        target: /homework
+    networks:
+      - hadoop-network
+    expose:
+      - 8020
+    ports:
+      - 8020:8020
+
+  datanode1:
+    hostname: datanode1
+    container_name: datanode1
+    image: swapnillinux/cloudera-hadoop-datanode
+    volumes:
+      - hadoop-datanode-1-volume:/root/
+    networks:
+      - hadoop-network
+
+  datanode2:
+    hostname: datanode2
+    container_name: datanode2
+    image: swapnillinux/cloudera-hadoop-datanode
+    volumes:
+      - hadoop-datanode-2-volume:/root/
+    networks:
+      - hadoop-network
+
+  datanode3:
+    hostname: datanode3
+    container_name: datanode3
+    image: swapnillinux/cloudera-hadoop-datanode
+    volumes:
+      - hadoop-datanode-3-volume:/root/
+    networks:
+      - hadoop-network
+
+volumes:
+  hadoop-yarnmaster-volume:
+      external: true
+  hadoop-namenode-volume:
+      external: true
+  hadoop-datanode-1-volume:
+      external: true
+  hadoop-datanode-2-volume:
+      external: true
+  hadoop-datanode-3-volume:
+      external: true
+
+networks:
+  hadoop-network:
+    driver: bridge
+    external: true

@@ -1,0 +1,9 @@
+folium==0.6.0
+matplotlib==3.0.2
+pandas==0.23.4
+notebook==5.7.2
+numpy==1.15.4
+scikit-learn==0.20
+scipy==1.1.0
+seaborn==0.9.0
+sodapy==1.5.0
