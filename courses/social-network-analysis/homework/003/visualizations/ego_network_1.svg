@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg contentScriptType="text/ecmascript" width="1131.0"
+     xmlns:xlink="http://www.w3.org/1999/xlink" zoomAndPan="magnify"
+     contentStyleType="text/css"
+     viewBox="-745.000000 -706.000000 1131.000000 1027.000000" height="1027.0"
+     preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"
+     version="1.1">
+    <g id="edges">
+        <path fill="none" stroke-width="4.0"
+              d="M 29.715315,161.333542 L 329.816101,-41.064224"
+              class="id_9 id_2" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 122.162796,-255.140762 L 329.816101,-41.064224"
+              class="id_17 id_2" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 122.162796,-255.140762 L 29.715315,161.333542"
+              class="id_17 id_9" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -153.408676,-199.216385 L 329.816101,-41.064224"
+              class="id_26 id_2" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -153.408676,-199.216385 L 29.715315,161.333542"
+              class="id_26 id_9" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -153.408676,-199.216385 L 122.162796,-255.140762"
+              class="id_26 id_17" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -153.408676,-199.216385 L -477.601196,306.479614"
+              class="id_26 id_19" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -257.558716,-546.396606 L 122.162796,-255.140762"
+              class="id_43 id_17" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -257.558716,-546.396606 L -153.408676,-199.216385"
+              class="id_43 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 335.284821,-320.924286 L 329.816101,-41.064224"
+              class="id_51 id_2" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 335.284821,-320.924286 L 122.162796,-255.140762"
+              class="id_51 id_17" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 335.284821,-320.924286 L -153.408676,-199.216385"
+              class="id_51 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -729.650391,-64.349548 L -153.408676,-199.216385"
+              class="id_56 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 354.865601,-629.247437 L -153.408676,-199.216385"
+              class="id_68 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 354.865601,-629.247437 L 335.284821,-320.924286"
+              class="id_68 id_51" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -694.385742,-465.097504 L -153.408676,-199.216385"
+              class="id_79 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -60.144753,-670.608276 L 122.162796,-255.140762"
+              class="id_80 id_17" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -60.144753,-670.608276 L -153.408676,-199.216385"
+              class="id_80 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+        <path fill="none" stroke-width="4.0"
+              d="M -60.144753,-670.608276 L -257.558716,-546.396606"
+              class="id_80 id_43" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 278.041748,150.064758 L 329.816101,-41.064224"
+              class="id_104 id_2" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 278.041748,150.064758 L 122.162796,-255.140762"
+              class="id_104 id_17" stroke-opacity="1.0" stroke="#feebe2"/>
+        <path fill="none" stroke-width="4.0"
+              d="M 278.041748,150.064758 L -153.408676,-199.216385"
+              class="id_104 id_26" stroke-opacity="1.0" stroke="#bc76ac"/>
+    </g>
+    <g id="nodes">
+        <circle fill-opacity="1.0" fill="#feebe2" r="50.833336" cx="329.8161"
+                class="id_2" cy="-41.064224" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="30.416668" cx="29.715315"
+                class="id_9" cy="161.33354" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="71.25" cx="122.162796"
+                class="id_17" cy="-255.14076" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="10.0" cx="-477.6012"
+                class="id_19" cy="306.4796" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#7a0177" r="112.08333" cx="-153.40868"
+                class="id_26" cy="-199.21638" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="30.416668" cx="-257.55872"
+                class="id_43" cy="-546.3966" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="40.625" cx="335.28482"
+                class="id_51" cy="-320.9243" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="10.0" cx="-729.6504"
+                class="id_56" cy="-64.34955" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="20.208334" cx="354.8656"
+                class="id_68" cy="-629.24744" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="10.0" cx="-694.38574"
+                class="id_79" cy="-465.0975" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="30.416668" cx="-60.144753"
+                class="id_80" cy="-670.6083" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+        <circle fill-opacity="1.0" fill="#feebe2" r="30.416668" cx="278.04175"
+                class="id_104" cy="150.06476" stroke="#000000"
+                stroke-opacity="1.0" stroke-width="10.0"/>
+    </g>
+    <g id="node-labels-outline">
+        <text stroke-linecap="round" font-size="48" x="329.8161" y="-31.775162"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_2" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            old
+        </text>
+        <text stroke-linecap="round" font-size="48" x="29.715315" y="170.6226"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_9" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            first
+        </text>
+        <text stroke-linecap="round" font-size="48" x="122.162796" y="-245.8517"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_17" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            little
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-477.6012" y="315.76868"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_19" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            best
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-153.40868"
+              y="-189.92732" fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_26" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            time
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-257.55872"
+              y="-537.10754" fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_43" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            other
+        </text>
+        <text stroke-linecap="round" font-size="48" x="335.28482" y="-309.311"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_51" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            good
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-729.6504" y="-52.736267"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_56" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            early
+        </text>
+        <text stroke-linecap="round" font-size="48" x="354.8656" y="-617.63416"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_68" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            long
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-694.38574"
+              y="-455.80844" fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_79" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            whole
+        </text>
+        <text stroke-linecap="round" font-size="48" x="-60.144753" y="-658.995"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_80" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            light
+        </text>
+        <text stroke-linecap="round" font-size="48" x="278.04175" y="156.95929"
+              fill="#ffffff" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_104" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="7.5px">
+            same
+        </text>
+    </g>
+    <g id="node-labels">
+        <text font-size="48" x="329.8161" y="-31.775162" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_2">
+            old
+        </text>
+        <text font-size="48" x="29.715315" y="170.6226" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_9">
+            first
+        </text>
+        <text font-size="48" x="122.162796" y="-245.8517" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_17">
+            little
+        </text>
+        <text font-size="48" x="-477.6012" y="315.76868" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_19">
+            best
+        </text>
+        <text font-size="48" x="-153.40868" y="-189.92732" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_26">
+            time
+        </text>
+        <text font-size="48" x="-257.55872" y="-537.10754" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_43">
+            other
+        </text>
+        <text font-size="48" x="335.28482" y="-309.311" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_51">
+            good
+        </text>
+        <text font-size="48" x="-729.6504" y="-52.736267" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_56">
+            early
+        </text>
+        <text font-size="48" x="354.8656" y="-617.63416" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_68">
+            long
+        </text>
+        <text font-size="48" x="-694.38574" y="-455.80844" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_79">
+            whole
+        </text>
+        <text font-size="48" x="-60.144753" y="-658.995" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_80">
+            light
+        </text>
+        <text font-size="48" x="278.04175" y="156.95929" fill="#ffffff"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_104">
+            same
+        </text>
+    </g>
+</svg>
