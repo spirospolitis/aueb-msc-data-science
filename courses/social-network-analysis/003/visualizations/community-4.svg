@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg contentScriptType="text/ecmascript" width="3067.0"
+     xmlns:xlink="http://www.w3.org/1999/xlink" zoomAndPan="magnify"
+     contentStyleType="text/css"
+     viewBox="0.000000 -245.000000 3067.000000 1733.000000" height="1733.0"
+     preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"
+     version="1.1">
+    <g id="edges">
+        <path fill="none" stroke-width="1.0"
+              d="M 1780.838867,-209.415527 L 2363.163086,-220.425537"
+              class="id_14 id_13" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 3020.154297,12.756799 L 2415.150879,-211.602783"
+              class="id_16 id_13" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 3019.039795,16.845936 L 1783.423584,-204.238846"
+              class="id_16 id_14" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1525.273560,907.174744 L 1751.554932,-182.691971"
+              class="id_37 id_14" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 991.584717,1446.244019 L 158.488388,561.290527"
+              class="id_47 id_23" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1024.439087,1446.416504 L 1501.831665,949.854187"
+              class="id_47 id_37" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1538.426758,1265.175293 L 1033.054199,1454.197266"
+              class="id_49 id_47" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1241.030273,147.738861 L 1734.937378,-193.706024"
+              class="id_59 id_14" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1222.536743,157.329193 L 161.907379,546.807373"
+              class="id_59 id_23" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1236.043701,163.554749 L 1511.099487,905.351013"
+              class="id_59 id_37" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1235.388794,163.773392 L 1553.094360,1231.107788"
+              class="id_59 id_49" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1784.816772,425.966797 L 1758.183838,-182.157364"
+              class="id_68 id_14" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1808.416138,442.081543 L 3017.104492,29.708141"
+              class="id_68 id_16" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1779.456055,472.734314 L 1567.959229,1230.979248"
+              class="id_68 id_49" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1086.541382,1141.976196 L 1496.307495,942.266418"
+              class="id_72 id_37" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 1078.725220,1136.202515 L 1230.307007,167.047607"
+              class="id_72 id_59" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 748.445129,649.840881 L 1736.579712,-191.568497"
+              class="id_105 id_14" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 730.113098,654.808960 L 162.526062,553.825684"
+              class="id_105 id_23" stroke-opacity="0.7490196" stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 746.397217,665.302063 L 1069.457153,1135.449951"
+              class="id_105 id_72" stroke-opacity="0.7490196" stroke="#000000"/>
+    </g>
+    <g id="arrows">
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_14 id_13"
+                  points="2366.162598,-220.482254 2363.191406,-218.925812 2363.134766,-221.925262"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_16 id_13"
+                  points="2412.337891,-212.645889 2415.672363,-213.009186 2414.629395,-210.196381"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_16 id_14"
+                  points="1780.470459,-204.767242 1783.687744,-205.715393 1783.159424,-202.762299"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_37 id_14"
+                  points="1752.164795,-185.629318 1753.023560,-182.387039 1750.086304,-182.996902"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_47 id_23"
+                  points="156.432022,559.106201 159.580566,560.262329 157.396210,562.318726"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_47 id_37"
+                  points="1503.910767,947.691528 1502.912964,950.893799 1500.750366,948.814575"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_49 id_47"
+                  points="1030.244263,1455.248169 1032.528687,1452.792358 1033.579712,1455.602173"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_59 id_14"
+                  points="1737.405029,-195.412003 1735.790405,-192.472168 1734.084351,-194.939880"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_59 id_23"
+                  points="159.091248,547.841492 161.390320,545.399292 162.424438,548.215454"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_59 id_37"
+                  points="1512.142578,908.163879 1509.693115,905.872498 1512.505859,904.829529"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_59 id_49"
+                  points="1553.950317,1233.983032 1551.656738,1231.535767 1554.531982,1230.679810"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_68 id_14"
+                  points="1758.052490,-185.154480 1759.682373,-182.222992 1756.685303,-182.091736"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_68 id_16"
+                  points="3019.943848,28.739445 3017.588867,31.127792 3016.620117,28.288490"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_68 id_49"
+                  points="1567.153198,1233.868896 1566.514404,1230.576294 1569.404053,1231.382202"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_72 id_37"
+                  points="1499.004272,940.952087 1496.964722,943.614807 1495.650269,940.918030"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_72 id_59"
+                  points="1230.770630,164.083649 1231.788940,167.279404 1228.825073,166.815811"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_105 id_14"
+                  points="1738.863770,-193.513443 1737.552246,-190.426437 1735.607178,-192.710556"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_105 id_23"
+                  points="159.572449,553.300171 162.788818,552.348877 162.263306,555.302490"
+                  stroke="none"/>
+        <polyline fill="#000000" fill-opacity="0.7490196" class="id_105 id_72"
+                  points="1071.156250,1137.922485 1068.220825,1136.299438 1070.693481,1134.600464"
+                  stroke="none"/>
+    </g>
+    <g id="nodes">
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="2389.9917"
+                class="id_13" cy="-220.93279" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="1757.0098"
+                class="id_14" cy="-208.965" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="3042.5005"
+                class="id_16" cy="21.04369" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="10.0" cx="149.23479"
+                class="id_23" cy="551.46094" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="1520.4286"
+                class="id_37" cy="930.51044" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="1007.9213"
+                class="id_47" cy="1463.5975" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="1560.7498"
+                class="id_49" cy="1256.8259" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="10.0" cx="1232.3932"
+                class="id_59" cy="153.70976" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="23.333334" cx="1785.8595"
+                class="id_68" cy="449.7773" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="10.0" cx="1077.1027"
+                class="id_72" cy="1146.5764" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+        <circle fill-opacity="0.75" fill="#ff5d85" r="10.0" cx="740.45074"
+                class="id_105" cy="656.6482" stroke="#000000"
+                stroke-opacity="0.75" stroke-width="1.0"/>
+    </g>
+    <g id="node-labels-outline">
+        <text stroke-linecap="round" font-size="37" x="2389.9917" y="-213.77246"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_13" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            beautiful
+        </text>
+        <text stroke-linecap="round" font-size="37" x="1757.0098" y="-201.80467"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_14" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            black
+        </text>
+        <text stroke-linecap="round" font-size="37" x="3042.5005" y="28.204008"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_16" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            letter
+        </text>
+        <text stroke-linecap="round" font-size="16" x="149.23479" y="555.10156"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_23" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="2.5px">
+            part
+        </text>
+        <text stroke-linecap="round" font-size="37" x="1520.4286" y="937.6166"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_37" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            eye
+        </text>
+        <text stroke-linecap="round" font-size="37" x="1007.9213" y="1470.7578"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_47" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            dark
+        </text>
+        <text stroke-linecap="round" font-size="37" x="1560.7498" y="1265.7778"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_49" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            night
+        </text>
+        <text stroke-linecap="round" font-size="16" x="1232.3932" y="157.35039"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_59" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="2.5px">
+            great
+        </text>
+        <text stroke-linecap="round" font-size="37" x="1785.8595" y="458.72922"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_68" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="5.78125px">
+            long
+        </text>
+        <text stroke-linecap="round" font-size="16" x="1077.1027" y="1149.6727"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_72" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="2.5px">
+            red
+        </text>
+        <text stroke-linecap="round" font-size="16" x="740.45074" y="660.2888"
+              fill="#e6e6e6" stroke-linejoin="round"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_105" stroke="#000000"
+              stroke-opacity="0.8" stroke-width="2.5px">
+            strong
+        </text>
+    </g>
+    <g id="node-labels">
+        <text font-size="37" x="2389.9917" y="-213.77246" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_13">
+            beautiful
+        </text>
+        <text font-size="37" x="1757.0098" y="-201.80467" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_14">
+            black
+        </text>
+        <text font-size="37" x="3042.5005" y="28.204008" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_16">
+            letter
+        </text>
+        <text font-size="16" x="149.23479" y="555.10156" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_23">
+            part
+        </text>
+        <text font-size="37" x="1520.4286" y="937.6166" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_37">
+            eye
+        </text>
+        <text font-size="37" x="1007.9213" y="1470.7578" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_47">
+            dark
+        </text>
+        <text font-size="37" x="1560.7498" y="1265.7778" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_49">
+            night
+        </text>
+        <text font-size="16" x="1232.3932" y="157.35039" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_59">
+            great
+        </text>
+        <text font-size="37" x="1785.8595" y="458.72922" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_68">
+            long
+        </text>
+        <text font-size="16" x="1077.1027" y="1149.6727" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_72">
+            red
+        </text>
+        <text font-size="16" x="740.45074" y="660.2888" fill="#e6e6e6"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="DejaVu Sans" class="id_105">
+            strong
+        </text>
+    </g>
+</svg>
