@@ -3,7 +3,7 @@
 ## Autumn 2019
 ## Lecturer: I. Kotidis
 ## Homework: 2
-## Author: Manolis Proimakis (p3351815), Spiros Politis (p3351814)
+## Author: Manolis Proimakis (https://github.com/manosprom), Spiros Politis
 
 ----------
 
