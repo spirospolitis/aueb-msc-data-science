@@ -1,0 +1,2 @@
+	model_id	test_loss	test_accuracy	test_auc
+0	DenseNet201_da_1_ts_224_224_t_0_s_1_bs_4_all_classes_binary	0.6111918687820435	0.7037848234176636	0.7481727004051208

@@ -1,0 +1,2 @@
+	model_id	accuracy	precision	recall	f1_score	cohen_kappa
+0	DenseNet201_da_1_ts_224_224_t_0_s_1_bs_4_all_classes_binary	0.7037847982483578	0.7428496688138868	0.6945514818604906	0.684831274288469	0.39598386475409597
