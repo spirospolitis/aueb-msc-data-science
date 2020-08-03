@@ -1,8 +1,8 @@
 # AUEB M.Sc. in Data Science (part-time)
-## Course: Machine Learning and Computational Statistics
-## Semester: Winter 2018
+## Course: Social Network Analysis
+## Semester: Fall 2019
 
-## Grade: 10 / 10
+## Grade: 9 / 10
 
 ----------
 

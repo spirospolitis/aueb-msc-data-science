@@ -1,7 +1,7 @@
 # AUEB M.Sc. in Data Science
-## Course: Data Mining
-## Autumn 2019
-## Lecturer: I. Kotidis
+## Course: Deep Learning
+## Summer 2020
+## Lecturer: P. Malakasiotis
 ## Author: Spiros Politis
 
 ## Grade: 8.5 / 10
