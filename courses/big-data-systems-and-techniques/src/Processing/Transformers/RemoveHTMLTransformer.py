@@ -5,7 +5,7 @@ import pyspark.sql.functions
 import os
 
 """
-    File: AbstractStorage.py
+    File: RemoveHTMLTransformer.py
     Date: 07/2020
     Author: Spiros Politis
     Python: 3.6

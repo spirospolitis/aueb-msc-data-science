@@ -96,7 +96,7 @@ def save_predictions(df, sc):
 if __name__ == "__main__":
     # Load best saved model.
     model = load_saved_model()
-
+    
     # Create Spark session.
     ss = SparkSession.builder.appName("BDSAT Task 5").getOrCreate()
     

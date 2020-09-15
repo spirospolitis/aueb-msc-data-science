@@ -4,7 +4,7 @@ import pyspark.ml
 import pyspark.sql.functions
 
 """
-    File: AbstractStorage.py
+    File: LowercaseTransformer.py
     Date: 07/2020
     Author: Spiros Politis
     Python: 3.6
